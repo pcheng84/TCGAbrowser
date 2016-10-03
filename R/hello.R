@@ -11,5 +11,5 @@
 #'
 #' @export
 hello <- function(who) {
-  sprintf("Hello, %s, your name is %d characters", who, nchar(who))
+  sprintf("Hello, %s, your name is %d characters", upper(who), nchar(who))
 }
