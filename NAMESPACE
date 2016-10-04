@@ -2,4 +2,8 @@
 
 export(hello)
 export(patsubset)
+export(samnum)
+import(MultiAssayExperiment)
 import(data.table)
+import(dplyr)
+import(magrittr)
