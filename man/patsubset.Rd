@@ -13,13 +13,13 @@ patsubset(pat, rna, gene, percent)
 
 \item{gene}{character(1) Gene symbol}
 
-\item{percent}{numeric(1) percentile of patients to compare}
+\item{percent}{numeric(1) percentile of patients to compare 1-50}
 }
 \value{
-data frame adds gene level column to original data frame
+Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups
 }
 \description{
-Assigns high and low levels to patient table depending on gene and percentile
+Adds gene expression column and gene level columns to patient table
 }
 \examples{
 

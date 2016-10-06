@@ -4,7 +4,7 @@
 \alias{hello}
 \title{Hello function}
 \usage{
-hello(who)
+hello(who, how = c("shout", "whisper"))
 }
 \arguments{
 \item{who}{character(1) holds name of person}

@@ -1,15 +1,15 @@
 #' patsubset function
 #'
-#' Assigns high and low levels to patient table depending on gene and percentile
+#' Adds gene expression column and gene level columns to patient table
 #'
 #' @param pat data frame with patient data, each patient is one row
 #' @param rna data frame with RNAseq count values, genes in rows, patients in columns
 #' @param gene character(1) Gene symbol
-#' @param percent numeric(1) percentile of patients to compare
+#' @param percent numeric(1) percentile of patients to compare 1-50
 #'
 #' @import data.table
 #'
-#' @return data frame adds gene level column to original data frame
+#' @return Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups
 #'
 #' @examples
 #'
@@ -30,12 +30,7 @@ patsubset <- function(pat, rna, gene, percent) {
   #pat.rna.gene[, ':=' (high = level > level[eval(high)], low = level <= level[eval(low)])]
   pat.rna.gene[, high := level > level[eval(high)]]
   pat.rna.gene[, low := level <= level[eval(low)]]
-  pat.rna.gene[, gene2 := c(rep("low", eval(low)), rep("middle", eval(high - low)), rep("high", eval(ncol(pat.rna) - 1 - high)))]
-  pat.rna.gene$gene2 <- factor(pat.rna.gene$gene2, levels = c("low", "high", "middle"))
-  pat.rna.gene
+  pat.rna.gene[, gene2 := factor(c(rep("low", eval(low)), rep("middle", eval(high - low)), rep("high", eval(ncol(pat.rna) - 1 - high))))]
+  phenosgene <- merge(pat, pat.rna.gene, by= "name")
+  phenosgene
 }
-
-#if percent is 50
-#pat.rna.gene[, gene2 := c(rep("low", eval(low)), rep("high", eval(ncol(pat.rna) - 1 - low)))]
-#pat.rna.gene$gene2 <- factor(pat.rna.gene$gene2, levels = c("low", "high"))
-#pat.rna.gene[, gene := as.numeric(pat.rna.gene$gene2)]

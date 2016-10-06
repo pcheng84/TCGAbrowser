@@ -10,6 +10,21 @@
 #' hello("Martin")
 #'
 #' @export
-hello <- function(who) {
-  sprintf("Hello, %s, your name is %d characters", upper(who), nchar(who))
+hello <- function(who, how=c("shout", "whisper")) {
+  stopifnot(
+    is.character(who),
+    length(who) == 1,
+    !is.na(who)
+  )
+  how <- match.arg(how)
+  fun <- switch(how, shout=shout, whisper=whisper)
+  sprintf("Hello, %s, your name is %d characters", fun(who), nchar(who))
+}
+
+shout <- function(who) {
+  toupper(who)
+}
+
+whisper <- function(who) {
+  tolower(who)
 }
