@@ -36,5 +36,5 @@ genesurv <- function(data, gene) {
                                     sprintf("%s low, n=%s\n Median OS %s years\n", gene, n[2], round(half[2],2))),
                     xlab = "Time Since Biopsy (Years)")
   res$table <- res$table + theme(axis.line = element_blank())
-  print(res)
+  res
 }
