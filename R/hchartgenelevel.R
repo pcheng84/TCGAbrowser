@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-plotgenelevel <- function(data) {
+hchartgenelevel <- function(data) {
   setkey(data, level)
   data[, name := factor(name, levels=name)]
   hchart(data, "scatter", x = name, y = level, color = gene2)
