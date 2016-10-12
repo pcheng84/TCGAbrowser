@@ -19,7 +19,7 @@
 #'
 #' @export
 #'
-plotlymut <- function(pat2, mut, gene, level) {
+plotlymut <- function(pat2, mut, gene, level, clust) {
   setkey(pat2, gene2)
   #gets patients with rnaseq, clinical and mutation data
   overlap <- intersect(pat2[level, bcr_patient_barcode], colnames(mut))
@@ -40,6 +40,10 @@ plotlymut <- function(pat2, mut, gene, level) {
   gg1 <- dcast.data.table(mut1.melt, bcr_patient_barcode ~ Gene)
   gene.order <- names(sort(apply(gg1[,colnames(gg1)[-1], with=F], 2, sum), decreasing=T))
   setkeyv(gg1, gene.order)
+
+  #switch(clust,
+   #      reg = list(1,2),
+    #     euclid = list())
 
   mut1.melt$bcr_patient_barcode <- factor(mut1.melt$bcr_patient_barcode, levels=rev(gg1$bcr_patient_barcode))
   mut1.melt$Gene <- factor(mut1.melt$Gene, levels=rev(gene.order))

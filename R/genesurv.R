@@ -8,6 +8,7 @@
 #' @import data.table
 #' @import survival
 #' @import survminer
+#' @import ggplot2
 #'
 #' @return survminer styled Survival plot
 #'
