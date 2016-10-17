@@ -17,8 +17,8 @@ Draws highchart scatter plot for gene levels
 }
 \examples{
 gene <- "SOX10"
-sox10 <- patsubset(pat, rna, gene, 10)
-hchartgenelevel(sox10)
+sox10.pat <- patsubset(pat, rna, gene, 10)
+hchartgenelevel(sox10.pat)
 
 }
 

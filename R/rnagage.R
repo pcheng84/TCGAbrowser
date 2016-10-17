@@ -18,10 +18,10 @@
 #'
 #' @export
 #'
-rnagage <- function(rnadeg, lookup) {
+rnagage <- function(deg, lookup) {
   data(kegg.gs)
-  limma.fc <- rnadeg$logFC
-  names(limma.fc) <- lookup$entrez[match(rnadeg$genes, lookup$gene)]
+  limma.fc <- deg$logFC
+  names(limma.fc) <- lookup$entrez[match(deg$genes, lookup$gene)]
   gage.fc <- gage(limma.fc, gsets = kegg.gs, ref = NULL, samp = NULL)
   gage.fc.g <- data.table(pathway = rownames(gage.fc$greater), gage.fc$greater, enrichment = "greater")
   gage.fc.l <- data.table(pathway = rownames(gage.fc$less), gage.fc$less, enrichment = "less")

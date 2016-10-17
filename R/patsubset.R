@@ -26,6 +26,7 @@ patsubset <- function(pat, rna, gene, percent) {
   #selecting row for gene and only retrieving values
   pat.rna.gene <- melt.data.table(pat.rna[gene, setdiff(colnames(pat.rna), "Gene"), with=F], id.vars = NULL, measure.vars = colnames(pat.rna)[-1], variable.name = "name", value.name="level")
   setkey(pat.rna.gene, level)
+  pat.rna.gene$exprs_rank <- 1:nrow(pat.rna.gene)
   #pat.rna.gene[, name := factor(name, levels=unique(name))]
   #pat.rna.gene[, ':=' (high = level > level[eval(high)], low = level <= level[eval(low)])]
   pat.rna.gene[, high := level > level[eval(high)]]

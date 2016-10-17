@@ -23,7 +23,7 @@ Uses ComplexHeatmap to draw heatmap for GSVA analysis
 }
 \examples{
 gene <- "SOX10"
-sox10.pat <- patsubset(pat, rna, gene, 10)
+sox10.pat <- patsubset(pat, rna, gene, 5)
 sox10.deg <- rnadeg(sox10.pat, rna)
 sox10.gsva <- rnagsva(sox10.deg)
 sox10.gsva.sig <- rnagsvasig(sox10.gsva)

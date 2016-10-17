@@ -10,6 +10,7 @@
 #' @import data.table
 #' @import ComplexHeatmap
 #' @import circlize
+#' @importFrom edgeR cpm
 #'
 #' @return ComplexHeatmap of top 100 significant differentially expressed genes
 #'
@@ -29,18 +30,25 @@ rnaheat <- function(pat2, rna, deg, gene) {
   rownames(h1) <- deg$genes[1:100]
   h1.t <- t(apply(h1, 1, scale))
   colnames(h1.t) <- colnames(h1)
-  df <- data.frame(as.character(pat2[!("middle"),gene2]))
-  colnames(df) <- gene
+  setkey(rna, Gene)
+  df <- data.frame(as.character(pat2[!("middle"),gene2]),
+                   pat2[!("middle"), exprs_rank])
+  colnames(df) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
   col1 <- list(Cell = c("high" = "#ca0020",
-                        "low" = "#0571b0"))
-  names(col1) <- gene
+                        "low" = "#0571b0"),
+               expression = colorRamp2(c(1, nrow(pat2)), c("white", "red")))
+  names(col1) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
   top_ha <- HeatmapAnnotation(df = df, col = col1)
 
-  Heatmap(h1.t, top_annotation = top_ha, name = "color scale", show_column_names = T, row_names_gp = gpar(fontsize=8), column_names_gp = gpar(fontsize=6))
- # for(an in colnames(df)) {
-  #  decorate_annotation(an, {
+  Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
+          show_column_names = T,
+          row_names_gp = gpar(fontsize=8),
+          column_names_gp = gpar(fontsize=6),
+          column_dend_reorder = as.numeric(df[, 1]))
+  #for(an in colnames(df)) {
+   #decorate_annotation(an, {
       # annotation names on the right
-   #   grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left")
+     #grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left")
       # annotation names on the left
       #grid.text(an, unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = "right")
     #})

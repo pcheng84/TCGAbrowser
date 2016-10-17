@@ -20,8 +20,9 @@
 #' @export
 #'
 genesurv <- function(pat2, gene) {
-  pat2.surv <- with(pat2, Surv(TCGA_year, vitalstatus) ~ gene2)
-  survplot <- do.call(survfit, args=list(formula = pat2.surv, subset=(pat2$gene2 != "middle")))
+  setkey(pat2, gene2)
+  pat2.surv <- with(pat2[!("middle")], Surv(TCGA_year, vitalstatus) ~ gene2)
+  survplot <- do.call(survfit, args=list(formula = pat2.surv))
   half <- summary(survplot)$table[,"median"]
   n <- summary(survplot)$table[,"records"]
   res <- ggsurvplot(survplot,

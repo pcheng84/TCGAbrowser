@@ -10,6 +10,7 @@
 #' @import limma
 #' @import GSVAdata
 #' @import parallel
+#' @import GSVAdata
 #'
 #' @return data frame of gsva values for all samples
 #'

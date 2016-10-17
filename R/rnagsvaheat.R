@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' gene <- "SOX10"
-#' sox10.pat <- patsubset(pat, rna, gene, 10)
+#' sox10.pat <- patsubset(pat, rna, gene, 5)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
 #' sox10.gsva <- rnagsva(sox10.deg)
 #' sox10.gsva.sig <- rnagsvasig(sox10.gsva)
@@ -36,19 +36,20 @@ rnagsvaheat <- function(pat2, rnagsva, rnagsvasig, gene) {
   names(col1) <- gene
   top_ha <- HeatmapAnnotation(df = df, col = col1)
 
-  Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
+  h1.heat <- Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
           show_column_names = T,
           row_names_gp = gpar(fontsize=8),
           column_names_gp = gpar(fontsize=6),
           row_names_max_width = unit(4, "cm"),
-          heatmap_legend_side = "left",
-          annotation_legend_side = "left")
-  # for(an in colnames(df)) {
-  #  decorate_annotation(an, {
+          column_dend_reorder = as.factor(df[, 1]))
+
+  draw(h1.heat, heatmap_legend_side = "left", annotation_legend_side = "left")
+  for(an in colnames(df)) {
+    decorate_annotation(an, {
   # annotation names on the right
-  #   grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left")
+     grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left")
   # annotation names on the left
   #grid.text(an, unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = "right")
-  #})
-  #}
+  })
+  }
 }
