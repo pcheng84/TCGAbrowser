@@ -14,8 +14,8 @@
 #'
 #' @examples
 #' gene <- "SOX10"
-#' sox10 <- patsubset(pat, rna, gene, 10)
-#' plotlycp(sox10, cp, gene, "high")
+#' sox10.pat <- patsubset(pat, rna, gene, 10)
+#' plotlycp(sox10.pat, cp, gene, "high")
 #'
 #' @export
 #'

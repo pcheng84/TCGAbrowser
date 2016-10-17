@@ -19,9 +19,11 @@
 #' sox10.pat <- patsubset(pat, rna, gene, 10)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
 #' rnareact(sox10.deg, lookup, 10, "dot")
-#'
+#' rnareact(sox10.deg, lookup, 10, "map")
+#' rnareact(sox10.deg, lookup, 10, "cnet")
 #'
 #' @export
+#'
 rnareact <- function(deg, lookup, n, graph) {
   limma.fc <- deg$logFC
   names(limma.fc) <- lookup$entrez[match(deg$genes, lookup$gene)]

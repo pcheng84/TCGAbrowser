@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' gene <- "SOX10"
-#' sox10.pat <- patsubset(pat, rna, gene, 10)
+#' sox10.pat <- patsubset(pat, rna, gene, 50)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
 #' rnaheat(sox10.pat, rna, sox10.deg, gene)
 #'
@@ -36,21 +36,22 @@ rnaheat <- function(pat2, rna, deg, gene) {
   colnames(df) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
   col1 <- list(Cell = c("high" = "#ca0020",
                         "low" = "#0571b0"),
-               expression = colorRamp2(c(1, nrow(pat2)), c("white", "red")))
+               expression = colorRamp2(c(1, nrow(pat2)), c("white", "purple")))
   names(col1) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
   top_ha <- HeatmapAnnotation(df = df, col = col1)
 
-  Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
+  x <- Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
           show_column_names = T,
           row_names_gp = gpar(fontsize=8),
           column_names_gp = gpar(fontsize=6),
           column_dend_reorder = as.numeric(df[, 1]))
-  #for(an in colnames(df)) {
-   #decorate_annotation(an, {
+  draw(x)
+  for(an in colnames(df)) {
+   decorate_annotation(an, {
       # annotation names on the right
-     #grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left")
+     grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left")
       # annotation names on the left
       #grid.text(an, unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = "right")
-    #})
-  #}
+    })
+  }
 }
