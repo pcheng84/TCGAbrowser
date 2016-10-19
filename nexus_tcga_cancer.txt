@@ -1,0 +1,35 @@
+Cancer_name	Cancer	Cases	Cases_data	update
+Acute Myeloid Leukemia	LAML	200	200	12/14/15
+Adrenocortical carcinoma	ACC	80	80	12/15/15
+Bladder Urothelial Carcinoma	BLCA	412	412	12/15/15
+Brain Lower Grade Glioma	LGG	516	516	01-04-16
+Breast invasive carcinoma	BRCA	1100	1097	12/28/15
+Cervical squamous cell carcinoma and endocervical adenocarcinoma	CESC	308	307	12/28/15
+Cholangiocarcinoma	CHOL	36	36	12/15/15
+Colon adenocarcinoma	COAD	461	461	12/28/15
+Esophageal carcinoma	ESCA	185	185	12/15/15
+FFPE Pilot Phase II	FPPP	38	38	12/23/15
+Glioblastoma multiforme	GBM	529	528	12/28/15
+Head and Neck squamous cell carcinoma	HNSC	528	528	12/28/15
+Kidney Chromophobe	KICH	66	66	12/15/15
+Kidney renal clear cell carcinoma	KIRC	536	536	01-05-16
+Kidney renal papillary cell carcinoma	KIRP	291	291	12/15/15
+Liver hepatocellular carcinoma	LIHC	377	377	12/28/15
+Lung adenocarcinoma	LUAD	521	521	12/28/15
+Lung squamous cell carcinoma	LUSC	510	504	12/28/15
+Lymphoid Neoplasm Diffuse Large B-cell Lymphoma	DLBC	48	48	12/28/15
+Mesothelioma	MESO	87	87	12/28/15
+Ovarian serous cystadenocarcinoma	OV	586	586	12/15/15
+Pancreatic adenocarcinoma	PAAD	185	185	12/15/15
+Pheochromocytoma and Paraganglioma	PCPG	179	179	12/28/15
+Prostate adenocarcinoma	PRAD	498	498	12/28/15
+Rectum adenocarcinoma	READ	172	171	12/28/15
+Sarcoma	SARC	261	261	12/28/15
+Skin Cutaneous Melanoma	SKCM	470	470	01-05-16
+Stomach adenocarcinoma	STAD	445	443	12/28/15
+Testicular Germ Cell Tumors	TGCT	150	150	12/15/15
+Thymoma	THYM	124	124	12/28/15
+Thyroid carcinoma	THCA	507	507	12/15/15
+Uterine Carcinosarcoma	UCS	57	57	12/15/15
+Uterine Corpus Endometrial Carcinoma	UCEC	548	548	12/28/15
+Uveal Melanoma	UVM	80	80	12/15/15

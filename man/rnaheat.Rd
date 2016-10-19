@@ -23,7 +23,7 @@ Uses ComplexHeatmap to draw heatmap
 }
 \examples{
 gene <- "SOX10"
-sox10.pat <- patsubset(pat, rna, gene, 10)
+sox10.pat <- patsubset(pat, rna, gene, 50)
 sox10.deg <- rnadeg(sox10.pat, rna)
 rnaheat(sox10.pat, rna, sox10.deg, gene)
 
