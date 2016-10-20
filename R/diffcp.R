@@ -23,19 +23,18 @@ diffcp <- function(pat2, cp) {
   overlap.high <- intersect(pat2["high", name], colnames(cp))
   overlap.low <- intersect(pat2["low", name], colnames(cp))
 
-  #calculates most mutated genes in the overlap patients
-  cp1 <- data.table(Gene = cp$Gene,
-                   N.high = rowSums(abs(cp[, overlap.high, with =FALSE])),
-                   N.hightotal = length(overlap.high),
-                   N.low = rowSums(abs(cp[, overlap.low, with =FALSE])),
-                   N.lowtotal = length(overlap.low))
+  cpmelt <- melt(cp, id.vars = "Gene", variable.name = "name")
+  setkey(cpmelt, name)
 
-  cp2 <- cp1[N.high + N.low != 0 & N.high + N.low != 1]
+  sum.high <- xtabs( ~ value + Gene,data = cpmelt[overlap.high])
+  sum.low <- xtabs( ~ value + Gene, data = cpmelt[overlap.low])
+
+  cpsum <- rbind(sum.high, sum.low)
   #creates matrix with 4 rows
-  xx = with(cp2, matrix(c(N.hightotal - N.high, N.high, N.lowtotal - N.low, N.low), 4, byrow=TRUE))
+  cp2 <- data.table(Gene = cp$Gene)
 
-  cp2[, p.value := apply(xx, 2, function(x) {
-    (chisq.test(matrix(x, 2))$p.value)
+  cp2[, p.value := apply(cpsum, 2, function(x) {
+    (chisq.test(matrix(x, 2, byrow = TRUE))$p.value)
   })]
 
   cp2[, FDR := p.adjust(p.value, method="BH")]

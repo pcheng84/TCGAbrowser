@@ -38,7 +38,7 @@ rnagsvaheat <- function(pat2, rnagsva, rnagsvasig, gene) {
 
   h1.heat <- Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
           show_column_names = T,
-          row_names_gp = gpar(fontsize=8),
+          row_names_gp = gpar(fontsize=6),
           column_names_gp = gpar(fontsize=6),
           row_names_max_width = unit(4, "cm"),
           column_dend_reorder = as.factor(df[, 1]))

@@ -164,15 +164,6 @@ function(input, output, session) {
     }
   })
 
-  pat.d1 <- reactive({
-    d1 <- d1()
-    pat <- pat()
-    #tumor <- input$TNM
-    #d2 <- d1[,c("Gene", na.omit(pat$name[which(pat$TNM %in% tumor)])), with=FALSE]
-    d2 <- d1[, c("Gene", colnames(d1)[colnames(d1) %in% pat$name]), with=F]
-    setkey(d2, Gene)
-    d2
-  })
 
   pat.d1.gene <- reactive({
     patsubset(pat(), d1(), gene(), input$quantile)
@@ -182,13 +173,6 @@ function(input, output, session) {
     plotlygenelevel(pat.d1.gene())
 
 
-  })
-
-  time <- reactive({
-    switch(input$Survival,
-           "overall" = "Overall"
-           #"pfs" = "PFS"
-           )
   })
 
   output$plot <- renderPlot({
@@ -229,7 +213,6 @@ function(input, output, session) {
   output$exome <- renderPlot({
     gene.mut <- diffmut(pat.d1.gene(), m1())
     plotlymut(pat.d1.gene(), m1(), gene.mut, gene())
-
   })
 
   output$copyplot <- renderPlot({
@@ -237,107 +220,43 @@ function(input, output, session) {
     plotlycp(pat.d1.gene(), cp1(), gene.cp, gene())
   })
 
-  hgenes <- reactive({
-    pheno <- quan()
-    pat.d1 <- pat.d1()
-    d2<- pat.d1[, pheno[, name], with=F]
-    d2[, Gene := gene.name]
-    setkey(d2, Gene)
-    d2
-  })
 
   hmap <- reactive({
     withProgress(message = "Calculating Differential Expression", value=0.1, {
-      Sys.sleep(0.25)
+      # Number of times we'll go through the loop
+      n <- 10
 
-      phenos <- quan()
-      d2 <- hgenes()
-      d3 <- DGEList(counts=d2[,setdiff(colnames(d2), "Gene"), with=F], genes=gene.name, group=phenos$gene)
-      isexpr <- rowSums(cpm(d3)>1) >= (ncol(d3)/2) #only keeps genes with at least 1 count-per-million in at least half the samples
-      d3 <- d3[isexpr,]
-      design <- model.matrix(~phenos$gene)
-      v2 <- voom(d3, design, plot=F)
-      fit <- lmFit(v2, design)
-      fit2 <- eBayes(fit)
-      fit3 <- topTable(fit2, coef=2, n=Inf, adjust.method="BH", p.value=0.05, lfc=1,sort="p")
-      jobLength = 10
-      for (i in 1:jobLength) {
-        # Do work
-        incProgress(0.1, detail = paste("part", i))
+      for (i in 1:n) {
+        # Each time through the loop, add another row of data. This is
+        # a stand-in for a long-running computation.
+
+        Sys.sleep(0.25)
+        # Increment the progress bar, and update the detail text.
+        incProgress(1/n, detail = paste("Calculating...", i))
       }
-      fit3
     })
+    fit3 <- rnadeg(pat.d1.gene(), d1())
+    fit3
   })
 
   #use orior count for log transformation
   output$heatmap <- renderPlot({
-    pat.gene <- quan()
-    genes <- hgenes()
-    deg <- hmap()
-    setkey(genes, Gene)
-    genes2 <- cpm(genes[, setdiff(colnames(genes), "Gene"), with=F], log=T, normalized.lib.sizes=F)
-    rownames(genes2) <- genes$Gene
-    map <- genes2[match(na.omit(deg$genes[1:100]), rownames(genes2)),]
-    colsidecolors <- matrix((pat.gene$gene * (-1)) + 3)
-    colnames(colsidecolors) <- gene()
-    #heatmap(map, col=colorRampPalette(c("blue", "white", "red"))(100), labCol=F, scale="row", cexRow= 0.3, ColSideColors = as.character(pat.gene$gene+1))
-    heatmap3(map, ColSideColors = colsidecolors, cexRow=0.2, cexCol=0.2,
-             legendfun=function() showLegend(legend=c("High", "Low"), col=c("black","firebrick")),verbose=TRUE)
+    rnaheat(pat.d1.gene(), d1(), hmap(), gene())
+
   })
 
   output$downloadheat <- downloadHandler(
-
-
        filename = function() {
          gene <- gene()
          paste(Sys.Date(), cancers[input$cancername, Cancer], gene, input$quantile, '.tiff', sep="_")
        },
        content = function(con) {
-         pat.gene <- quan()
-         genes <- hgenes()
-         deg <- hmap()
-         setkey(genes, Gene)
-         genes2 <- cpm(genes[, setdiff(colnames(genes), "Gene"), with=F], log=TRUE, normalized.lib.sizes=F)
-         rownames(genes2) <- genes$Gene
-         map <- genes2[match(na.omit(deg$genes[1:100]), rownames(genes2)),]
          tiff(con, width = 1200, height = 1600, units = "px", pointsize=18)
          par(mar=c(7,4,10,2))
-         colsidecolors <- matrix((pat.gene$gene * (-1)) + 3)
-         colnames(colsidecolors) <- gene()
-         #names(colsidescolors) <- gene()
-         #heatmap(map, col=colorRampPalette(c("blue", "white", "red"))(100), labCol=F, scale="row", cexRow= 0.3, ColSideColors = as.character(pat.gene$gene+1))
-         heatmap3(map, ColSideColors = colsidecolors, cexRow=1, cexCol=1,
-                  legendfun=function() showLegend(legend=c("High", "Low"), col=c("black","firebrick"), cex=3),verbose=TRUE)
+         rnaheat(pat.d1.gene(), d1(), hmap(), gene())
          dev.off()
-
        }
      )
-
-
-  keggfactor <- reactive({
-    switch(input$highlow,
-           Upregulated = "greater",
-           Downregulated = "less")
-  })
-
-  output$Kegg <- renderGvis({
-    deg <- hmap()
-    limma.fc <- deg$logFC
-    names(limma.fc) <- lookup$entrez[match(deg$genes, lookup$gene)]
-    kf <- keggfactor()
-    fc.kegg.p <- gage(limma.fc, gsets = kegg.gs, ref = NULL, samp = NULL)
-    sel <- fc.kegg.p$greater[, "p.val"] < 0.05 & !is.na(fc.kegg.p$greater[,"p.val"])
-    greater <- data.frame(cbind(Pathway = rownames(fc.kegg.p$greater[sel,]),round(fc.kegg.p$greater[sel,1:5],5)))
-    sel.1 <- fc.kegg.p$less[,"p.val"] < 0.05 & !is.na(fc.kegg.p$less[,"p.val"])
-    less <-data.frame(cbind(Pathway = rownames(fc.kegg.p$less[sel.1,]), round(fc.kegg.p$less[sel.1,1:5],5)))
-    if(kf == "greater") gvisTable(greater,options=list(page='enable', pageSize= 20, width=950))
-    else gvisTable( less,options=list(page='enable', pageSize= 20, width=950))
-
-  })
-
-  output$download_KEGG <- renderUI({
-
-  })
 
   output$DEG <- renderDataTable(hmap(),
                                 extensions = c('TableTools'),
@@ -345,11 +264,39 @@ function(input, output, session) {
                                                pageLength = 10,
                                                lengthMenu = c(10,25,100,1000, 2000),
                                                tableTools = list(sSwfPath = copySWF("www")))
-                                )
+  )
 
+  gsva <- reactive({
+        gene.gsva <- rnagsva(pat.d1.gene(), d1())
+  })
+
+  gsvasig <- reactive({
+    gene.gsva.sig <- rnagsvasig(pat.d1.gene(), gsva())
+  })
+
+  output$GSVA <- renderGvis({
+
+    gvisTable(gsvasig(),options=list(page='enable',
+                                         pageSize= 20,
+                                         height = "automatic",
+                                         width = "automatic"))
+  })
+
+  output$gsvaheatmap <- renderPlot({
+    rnagsvaheat(pat.d1.gene(), gsva(), gsvasig(), gene())
+
+  })
+
+  output$react <- renderPlot({
+    gene.react <- rnareact(hmap(), lookup)
+    graph <- switch(input$graph,
+                    Dotplot = "dot",
+                    Enrichment = "map",
+                    Cnet = "cnet")
+    plotreact(gene.react, hmap(), graph, 15)
+  })
 
   graphfactor <- reactive({
-
     switch(input$patgene,
            Age = "age_group",
            Gender ="gender",

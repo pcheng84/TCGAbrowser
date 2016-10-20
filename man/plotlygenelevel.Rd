@@ -13,7 +13,7 @@ plotlygenelevel(data)
 interactive scatter plot for gene level across all patients
 }
 \description{
-Draws plotly bar plot for gene levels
+Draws plotly bar plot for gene levels (log scale)
 }
 \examples{
 gene <- "SOX10"

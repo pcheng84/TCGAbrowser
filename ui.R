@@ -70,19 +70,21 @@ dashboardPage(
                 infoBoxOutput("cancerselect", width=12),
                 fluidRow(
                   box(title = "RNA expression", solidHeader=F, status = "warning", width=4, collapsible = F,
-                      plotlyOutput("geneplot")),
-                  tabBox(title = "", width=8,
+                      plotlyOutput("geneplot", height = 800)),
+                  tabBox(title = "", width=8, height = 800,
                          id = "tabbox1",
-                         tabPanel("Survival plot", plotOutput("plot")),
-                         tabPanel("Univariate Cox", plotOutput("coxplot"), verbatimTextOutput("coxinfo")),
-                         tabPanel("Multivariate Cox", verbatimTextOutput("mcoxinfo")),
-                         tabPanel("Heatmap", downloadLink("downloadheat", "Download"), plotOutput("heatmap"), height="1000px"),
+                         tabPanel("Survival plot", plotOutput("plot", height= 800)),
+                         tabPanel("Exome plot", plotOutput("exome", height= 800)),
+                         tabPanel("Copy Number Plot", plotOutput("copyplot", height= 800)),
+                         #tabPanel("Univariate Cox", plotOutput("coxplot"), verbatimTextOutput("coxinfo")),
+                         #tabPanel("Multivariate Cox", verbatimTextOutput("mcoxinfo")),
+                         tabPanel("Heatmap", downloadLink("downloadheat", "Download"), plotOutput("heatmap", height=800)),
                          tabPanel("Differential expression", dataTableOutput("DEG")),
-                         tabPanel("KEGG Analysis",
-                                  selectInput("highlow", "Enriched Pathways:",
-                                              choices =c("Upregulated",
-                                                         "Downregulated")),
-                                  htmlOutput("Kegg")),
+                         tabPanel("GSVA Analysis", htmlOutput("GSVA")),
+                         tabPanel("GSVA Heatmap", plotOutput("gsvaheatmap", height = 800)),
+                         tabPanel("Reactome Plots", selectInput("graph", "Plot",
+                                                                choices =c("Dotplot", "Enrichment", "Cnet")),
+                                  plotOutput("react", height = 800)),
                          tabPanel("Bar graphs",
                                   selectInput("patgene",
                                               "Choose a factor:",
@@ -93,13 +95,8 @@ dashboardPage(
                                   showOutput("bargraph", "nvd3")
                                 )
                        )
-                ),
-                fluidRow(
-                  column(width = 6,
-                         box(title = "Exome Plot", width = NULL, status = "primary", plotOutput("exome"))),
-                  column(width = 6,
-                         box(title = "Copy Number Plot", width = NULL, status = "danger", plotOutput("copyplot")))
                 )
+
         )
       )
     )
