@@ -27,7 +27,7 @@ plotlycp <- function(pat2, cp, genecp, gene) {
   overlap.low <- intersect(pat2["low", name], colnames(cp))
 
   setkey(cp, Gene)
-  glist <- c(genecp$Gene[1:20], gene)
+  glist <- c(genecp[p.value.high < 0.05, Gene[1:15]], genecp[p.value.low < 0.05, Gene[1:15]], gene)
   glist <- glist[!duplicated(glist)]
 
   #getting copy number profile for high group

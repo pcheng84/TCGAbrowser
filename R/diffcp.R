@@ -30,14 +30,31 @@ diffcp <- function(pat2, cp) {
   sum.low <- xtabs( ~ value + Gene, data = cpmelt[overlap.low])
 
   cpsum <- rbind(sum.high, sum.low)
-  #creates matrix with 4 rows
-  cp2 <- data.table(Gene = cp$Gene)
+  filtercp <- colSums(cpsum[c(1, 4), ]) != 0 | colSums(cpsum[c(3, 6),]) != 0
+  cpsum2 <- cpsum[,colSums(cpsum[c(1, 4), ]) != 0 | colSums(cpsum[c(3, 6),]) != 0]
 
-  cp2[, p.value := apply(cpsum, 2, function(x) {
-    (chisq.test(matrix(x, 2, byrow = TRUE))$p.value)
+  #creates data.table to be filled with p values
+  cp2 <- data.table(Gene = colnames(cpsum2))
+
+  #removes warning message from chi-squared test
+
+
+  cp2[, p.value.high := apply(cpsum2, 2, function(x) {
+    oopts <- options(warn = -1)
+    on.exit(oopts)
+    (chisq.test(matrix(x[c(2,3,5,6)], 2, byrow = TRUE))$p.value)
   })]
 
-  cp2[, FDR := p.adjust(p.value, method="BH")]
-  setkey(cp2, p.value)
-  cp2
+  cp2[, p.value.low := apply(cpsum2, 2, function(x) {
+    oopts <- options(warn = -1)
+    on.exit(oopts)
+    (chisq.test(matrix(x[c(1,2,4,5)], 2, byrow = TRUE))$p.value)
+  })]
+
+  cp2[, FDR.high := p.adjust(p.value.high, method="BH")]
+  cp2[, FDR.low := p.adjust(p.value.low, method="BH")]
+  setkey(cp2, p.value.high)
+
+  #will add locus id later
+  #cp2[, Locus := cp.name$'Locus ID'[match(cp2$Gene, cp.name$'Gene Symbol')]]
 }
