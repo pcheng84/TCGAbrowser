@@ -18,8 +18,9 @@ data frame of enrichment for Reactome gene sets
 Uses ReactomePA to find enriched pathways from the RNAseq differential gene analysis
 }
 \examples{
+data(skcm)
 gene <- "SOX10"
-sox10.pat <- patsubset(pat, rna, gene, 10)
+sox10.pat <- rnasubset(pat, rna, gene, 10)
 sox10.deg <- rnadeg(sox10.pat, rna)
 sox10.react <- rnareact(sox10.deg, lookup)
 
