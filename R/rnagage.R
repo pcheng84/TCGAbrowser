@@ -11,8 +11,9 @@
 #' @return data frame of RNAseq values for only patients in the high and low gene expression groups
 #'
 #' @examples
+#' data(skcm)
 #' gene <- "SOX10"
-#' sox10.pat <- patsubset(pat, rna, gene, 10)
+#' sox10.pat <- rnasubset(pat, rna, gene, 10)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
 #' sox10.gage <- rnagage(sox10.deg, lookup)
 #'

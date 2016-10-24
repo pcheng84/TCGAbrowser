@@ -166,7 +166,7 @@ function(input, output, session) {
 
 
   pat.d1.gene <- reactive({
-    patsubset(pat(), d1(), gene(), input$quantile)
+    rnasubset(pat(), d1(), gene(), input$quantile)
   })
 
   output$geneplot <- renderPlotly({

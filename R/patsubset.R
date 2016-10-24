@@ -1,4 +1,4 @@
-#' patsubset function
+#' rnasubset function
 #'
 #' Adds gene expression column and gene level columns to patient table
 #'
@@ -12,11 +12,11 @@
 #' @return Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups
 #'
 #' @examples
-#'
-#' patsubset(SKCMpat, SKCMrna, "SOX10", 10)
+#' data(skcm)
+#' rnasubset(pat, rna, "SOX10", 10)
 #'
 #' @export
-patsubset <- function(pat, rna, gene, percent) {
+rnasubset <- function(pat, rna, gene, percent) {
   #retrieves patients with RNAseq data
   pat.rna <- rna[, c("Gene", colnames(rna)[colnames(rna) %in% pat$name]), with=F]
   setkey(pat.rna, Gene)
