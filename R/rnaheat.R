@@ -25,10 +25,11 @@
 #'
 rnaheat <- function(pat2, rna, deg, gene) {
   setkey(pat2, gene2)
-  rna.log <- data.table(Gene = rna$Gene, cpm(rna[,pat2[!("middle"), name], with=F], log=T, normalized.lib.sizes=F, prior.count = 8))
+  rna.log <- data.table(Gene = rna$Gene, cpm(rna[,pat2[!("middle"), name], with = FALSE], log = TRUE, normalized.lib.sizes = FALSE, prior.count = 8))
   setkey(rna.log, Gene)
-  h1 <- as.matrix(rna.log[deg$genes[1:100], colnames(rna.log)[-1], with=F])
-  rownames(h1) <- deg$genes[1:100]
+  dgenes <- deg$genes[1:100][!is.na(deg$genes[1:100])]
+  h1 <- as.matrix(rna.log[dgenes, colnames(rna.log)[-1], with = FALSE])
+  rownames(h1) <- dgenes
   h1.t <- t(apply(h1, 1, scale))
   colnames(h1.t) <- colnames(h1)
   setkey(rna, Gene)
@@ -43,8 +44,8 @@ rnaheat <- function(pat2, rna, deg, gene) {
 
   x <- Heatmap(h1.t, top_annotation = top_ha, name = "color scale",
           show_column_names = T,
-          row_names_gp = gpar(fontsize=8),
-          column_names_gp = gpar(fontsize=6),
+          row_names_gp = gpar(fontsize = 8),
+          column_names_gp = gpar(fontsize = 6),
           column_dend_reorder = as.numeric(df[, 1]))
   draw(x)
   for(an in colnames(df)) {
