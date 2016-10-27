@@ -25,7 +25,7 @@
 #'
 rnaheat <- function(pat2, rna, deg, gene) {
   setkey(pat2, gene2)
-  rna.log <- data.table(Gene = rna$Gene, cpm(rna[,pat2[!("middle"), name], with=F], log=T, normalized.lib.sizes=F))
+  rna.log <- data.table(Gene = rna$Gene, cpm(rna[,pat2[!("middle"), name], with=F], log=T, normalized.lib.sizes=F, prior.count = 8))
   setkey(rna.log, Gene)
   h1 <- as.matrix(rna.log[deg$genes[1:100], colnames(rna.log)[-1], with=F])
   rownames(h1) <- deg$genes[1:100]
