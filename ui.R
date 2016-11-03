@@ -24,17 +24,40 @@ dashboardPage(
                                  selectizeInput("genename",
                                                 "Gene (Type gene below)",
                                                 choices = "",
-                                                options = list(maxOptions = 10)
+                                                options = list(maxOptions = 30)
                                                 ),
-                actionButton("goButton", "submit"),
-                sliderInput(inputId="quantile", label = "Percentile %:", min = 1, max = 50, value = 10, step = 1),
-                          radioButtons("Survival", "Survival Time (only overall available)",
-                                       c("Overall" = "overall")
-                                       #"PFS" = "pfs")),
-                                       )
-                          #checkboxGroupInput("TNM", "TNM Stage",
-                          #                   choices = unique(pat$TNM),
-                          #                  selected = unique(pat$TNM))
+                                 actionButton("goButton", "submit"),
+                                 sliderInput(inputId="quantile",
+                                             label = "Percentile %:",
+                                             min = 1,
+                                             max = 50,
+                                             value = 10,
+                                             step = 1),
+                                 radioButtons("Survival",
+                                              "Survival Time (only overall available)",
+                                              c("Overall" = "overall")
+                                              #"PFS" = "pfs")),
+                                              )
+                                 #checkboxGroupInput("TNM", "TNM Stage",
+                                 #choices = unique(pat$TNM),
+                                 #selected = unique(pat$TNM))
+                                 ),
+                menuItem("Mutation explorer", tabName = "b",  icon = icon("link", lib="font-awesome")),
+                conditionalPanel("input.sidebarmenu === 'b'",
+                                 selectizeInput("genename2",
+                                                "Gene (Type gene below)",
+                                                choices = "",
+                                                options = list(maxOptions = 30)
+                                 ),
+                                 actionButton("goButton2", "submit"),
+                                 radioButtons("Survival2",
+                                              "Survival Time (only overall available)",
+                                              c("Overall" = "overall")
+                                              #"PFS" = "pfs")),
+                                 )
+                                 #checkboxGroupInput("TNM", "TNM Stage",
+                                 #choices = unique(pat$TNM),
+                                 #selected = unique(pat$TNM))
                 )
     )
   ),
@@ -96,9 +119,42 @@ dashboardPage(
                                 )
                        )
                 )
+                ),
 
+        tabItem(tabName = "b",
+                infoBoxOutput("cancerselect2", width=12),
+                fluidRow(
+                  box(title = "RNA expression", solidHeader=F, status = "warning", width=4, collapsible = F,
+                      plotlyOutput("geneplot2", height = 800)),
+                  tabBox(title = "", width=8, height = 800,
+                         id = "tabbox2",
+                         tabPanel("Survival plot", plotOutput("plot2", height= 800)),
+                         tabPanel("Exome plot", plotOutput("exome2", height= 800)),
+                         tabPanel("Copy Number Plot", plotOutput("copyplot2", height= 800)),
+                         #tabPanel("Univariate Cox", plotOutput("coxplot"), verbatimTextOutput("coxinfo")),
+                         #tabPanel("Multivariate Cox", verbatimTextOutput("mcoxinfo")),
+                         tabPanel("Heatmap", downloadLink("downloadheat2", "Download"), plotOutput("heatmap2", height=800)),
+                         tabPanel("Differential expression", dataTableOutput("DEG2")),
+                         tabPanel("GSVA Analysis", htmlOutput("GSVA2")),
+                         tabPanel("GSVA Heatmap", plotOutput("gsvaheatmap2", height = 800)),
+                         tabPanel("Reactome Plots", selectInput("graph2", "Plot",
+                                                                choices =c("Dotplot", "Enrichment", "Cnet")),
+                                  plotOutput("react2", height = 800)),
+                         tabPanel("Bar graphs",
+                                  selectInput("patgene2",
+                                              "Choose a factor:",
+                                              choices = c("Age",
+                                                          "Gender",
+                                                          "Stage")
+                                  ),
+                                  showOutput("bargraph2", "nvd3")
+                         )
+                  )
+                  )
+                )
         )
-      )
     )
   )
 )
+
+

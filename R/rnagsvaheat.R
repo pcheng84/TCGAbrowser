@@ -32,8 +32,9 @@ rnagsvaheat <- function(pat2, rnagsva, rnagsvasig, gene) {
   colnames(h1.t) <- colnames(h1)
   df <- data.frame(as.character(pat2[!("middle"),gene2]))
   colnames(df) <- gene
-  col1 <- list(Cell = c("high" = "#ca0020",
-                        "low" = "#0571b0"))
+  cellcol <- c("#ca0020", "#0571b0")
+  names(cellcol) <- c(levels(pat2$gene2)[1], levels(pat2$gene2)[2])
+  col1 <- list(Cell = cellcol)
   names(col1) <- gene
   top_ha <- HeatmapAnnotation(df = df, col = col1)
 

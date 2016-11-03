@@ -20,8 +20,8 @@
 diffcp <- function(pat2, cp) {
   setkey(pat2, gene2)
   #gets patients with rnaseq, clinical and mutation data
-  overlap.high <- intersect(pat2["high", name], colnames(cp))
-  overlap.low <- intersect(pat2["low", name], colnames(cp))
+  overlap.high <- intersect(pat2[levels(pat2$gene2)[1], name], colnames(cp))
+  overlap.low <- intersect(pat2[levels(pat2$gene2)[2], name], colnames(cp))
 
   cpmelt <- melt(cp, id.vars = "Gene", variable.name = "name")
   setkey(cpmelt, name)

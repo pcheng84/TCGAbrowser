@@ -24,8 +24,8 @@
 plotlycp <- function(pat2, cp, genecp, gene) {
   setkey(pat2, gene2)
 
-  overlap.high <- intersect(pat2["high", name], colnames(cp))
-  overlap.low <- intersect(pat2["low", name], colnames(cp))
+  overlap.high <- intersect(pat2[levels(pat2$gene2)[1], name], colnames(cp))
+  overlap.low <- intersect(pat2[levels(pat2$gene2)[2], name], colnames(cp))
 
   setkey(cp, Gene)
   glist <- c(genecp[p.value.high < 0.05, Gene[1:15]], genecp[p.value.low < 0.05, Gene[1:15]], gene)
@@ -44,13 +44,13 @@ plotlycp <- function(pat2, cp, genecp, gene) {
   gg1.high <- dcast.data.table(cp1.melt.high, name ~ Gene)
   gene.order.high <- names(sort(apply(gg1.high[,colnames(gg1.high)[-1], with=F], 2, sum), decreasing=T))
   setkeyv(gg1.high, gene.order.high)
-  cp1.melt.high[, gene2 := "high"]
+  cp1.melt.high[, gene2 := levels(pat2$gene2)[1]]
 
   cp1.melt.low <- melt(cp1.low, variable.name="name", id.vars="Gene")
   gg1.low <- dcast.data.table(cp1.melt.low, name ~ Gene)
   gene.order.low <- names(sort(apply(gg1.low[,colnames(gg1.low)[-1], with=F], 2, sum), decreasing=T))
   setkeyv(gg1.low, gene.order.low)
-  cp1.melt.low[, gene2 := "low"]
+  cp1.melt.low[, gene2 := levels(pat2$gene2)[2]]
 
   #combine mutation groups order patients according to sorting from individual dcasts
   cp1.melt <- rbind(cp1.melt.high, cp1.melt.low)

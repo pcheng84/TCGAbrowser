@@ -159,24 +159,26 @@ function(input, output, session) {
     if(is.null(input$genename))
       return("EGFR")
     else {
-      input$goButton
-      toupper(isolate(input$genename))
+      toupper(input$genename)
     }
   })
 
 
   pat.d1.gene <- reactive({
-    rnasubset(pat(), d1(), gene(), input$quantile)
+    input$goButton
+    rnasubset(pat(), d1(), isolate(gene()), isolate(input$quantile))
   })
 
   output$geneplot <- renderPlotly({
-    plotlygenelevel(pat.d1.gene())
+    input$goButton
+    plotlygenelevel(isolate(pat.d1.gene()))
 
 
   })
 
   output$plot <- renderPlot({
-    genesurv(pat.d1.gene(), gene())
+    input$goButton
+    genesurv(pat.d1.gene(), isolate(gene()))
   })
 
   cox.surv <- reactive({
@@ -241,7 +243,8 @@ function(input, output, session) {
 
   #use orior count for log transformation
   output$heatmap <- renderPlot({
-    rnaheat(pat.d1.gene(), d1(), hmap(), gene())
+    input$goButton
+    rnaheat(pat.d1.gene(), d1(), hmap(), isolate(gene()))
 
   })
 
@@ -306,20 +309,166 @@ function(input, output, session) {
   })
 
   output$bargraph <- renderChart({
-    gene <- gene()
-    pat.gene <- quan()
+    pat.gene <- pat.d1.gene()
     group <- graphfactor()
 
-    gr <- pat.gene[, .N , by=.(gene, with(pat.gene, get(group)))][order(with)]
-    setkey(gr, gene, with)
-    setnames(gr, 2, group)
-    gr[gene == 1, gene2 := "low"]
-    gr[gene == 2, gene2 := "high"]
-    n1 <- nPlot(N ~ gene2, group = group, data = gr, type = "multiBarChart")
+    gr <- pat.gene[, .N , by=.(gene2, with(pat.gene, get(group)))][order(with)]
+    setkey(gr, gene2, with)
+    gr2 <- gr[gr$gene2 !="middle"]
+    setnames(gr2, 2, group)
+
+    n1 <- nPlot(N ~ gene2, group = group, data = gr2, type = "multiBarChart")
     n1$chart(margin = list(left = 100))
     n1$yAxis(axisLabel  ="Number of patients")
     n1$addParams(dom = "bargraph")
     return(n1)
+  })
+
+  #Exome explorer section
+
+  output$cancerselect2 <- renderInfoBox({
+    infoBox(title = input$cancername, value = cancers[input$cancername, Cancer], subtitle = "Mutation explorer", icon = icon("area-chart"), color = "aqua", width = 6)
+  })
+
+
+  updateSelectizeInput(session, "genename2", choices = gene.name2, server = T, selected = "EGFR")
+
+  gene2 <- reactive({
+    if(is.null(input$genename2))
+      return("EGFR")
+    else {
+      toupper(input$genename2)
+    }
+  })
+
+
+  pat.d1.gene2 <- reactive({
+    input$goButton2
+    mutsubset(pat(), d1(), m1(), isolate(gene2()))
+  })
+
+  output$geneplot2 <- renderPlotly({
+    input$goButton2
+    plotlygenelevel(isolate(pat.d1.gene2()))
+
+
+  })
+
+  output$plot2 <- renderPlot({
+    input$goButton2
+    genesurv(pat.d1.gene2(), isolate(gene2()))
+  })
+
+  output$exome2 <- renderPlot({
+    gene.mut <- diffmut(pat.d1.gene2(), m1())
+    plotlymut(pat.d1.gene2(), m1(), gene.mut, gene2())
+  })
+
+  output$copyplot2 <- renderPlot({
+    gene.cp <- diffcp(pat.d1.gene2(), cp1())
+    plotlycp(pat.d1.gene2(), cp1(), gene.cp, gene2())
+  })
+
+
+  hmap2 <- reactive({
+    withProgress(message = "Calculating Differential Expression", value=0.1, {
+      # Number of times we'll go through the loop
+      n <- 10
+
+      for (i in 1:n) {
+        # Each time through the loop, add another row of data. This is
+        # a stand-in for a long-running computation.
+
+        Sys.sleep(0.25)
+        # Increment the progress bar, and update the detail text.
+        incProgress(1/n, detail = paste("Calculating...", i))
+      }
+    })
+    fit3 <- rnadeg(pat.d1.gene2(), d1())
+    fit3
+  })
+
+  #use orior count for log transformation
+  output$heatmap2 <- renderPlot({
+    input$goButton2
+    rnaheat(pat.d1.gene2(), d1(), hmap2(), isolate(gene2()))
+
+  })
+
+  output$downloadheat2 <- downloadHandler(
+    filename = function() {
+      gene <- gene()
+      paste(Sys.Date(), cancers[input$cancername, Cancer], gene2, '.tiff', sep="_")
+    },
+    content = function(con) {
+      tiff(con, width = 1200, height = 1600, units = "px", pointsize=18)
+      par(mar=c(7,4,10,2))
+      rnaheat(pat.d1.gene2(), d1(), hmap2(), gene2())
+      dev.off()
+    }
+  )
+
+  output$DEG2 <- renderDataTable(hmap2(),
+                                extensions = c('TableTools'),
+                                options = list(dom = 'T<"clear">lfrtip',
+                                               pageLength = 10,
+                                               lengthMenu = c(10,25,100,1000, 2000),
+                                               tableTools = list(sSwfPath = copySWF("www")))
+  )
+
+  gsva2 <- reactive({
+    gene.gsva <- rnagsva(pat.d1.gene2(), d1())
+  })
+
+  gsvasig2 <- reactive({
+    gene.gsva.sig <- rnagsvasig(pat.d1.gene2(), gsva2())
+  })
+
+  output$GSVA2 <- renderGvis({
+
+    gvisTable(gsvasig2(),options=list(page='enable',
+                                     pageSize= 20,
+                                     height = "automatic",
+                                     width = "automatic"))
+  })
+
+  output$gsvaheatmap2 <- renderPlot({
+    rnagsvaheat(pat.d1.gene2(), gsva2(), gsvasig2(), gene2())
+
+  })
+
+  output$react2 <- renderPlot({
+    gene.react <- rnareact(hmap2(), lookup)
+    graph <- switch(input$graph2,
+                    Dotplot = "dot",
+                    Enrichment = "map",
+                    Cnet = "cnet")
+    plotreact(gene.react, hmap2(), graph, 15)
+  })
+
+  graphfactor2 <- reactive({
+    switch(input$patgene2,
+           Age = "age_group",
+           Gender ="gender",
+           Stage = "pathologicstage"
+           #Gleason = "something"
+    )
+  })
+
+  output$bargraph2 <- renderChart({
+    pat.gene <- pat.d1.gene2()
+    group <- graphfactor2()
+
+    gr <- pat.gene[, .N , by=.(gene2, with(pat.gene, get(group)))][order(with)]
+    setkey(gr, gene2, with)
+    gr2 <- gr[gr$gene2 !="middle"]
+    setnames(gr2, 2, group)
+
+    n2 <- nPlot(N ~ gene2, group = group, data = gr2, type = "multiBarChart")
+    n2$chart(margin = list(left = 100))
+    n2$yAxis(axisLabel  ="Number of patients")
+    n2$addParams(dom = "bargraph")
+    return(n2)
   })
 
 }

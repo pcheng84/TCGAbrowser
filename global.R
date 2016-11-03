@@ -9,7 +9,7 @@ library(googleVis)
 library(gage)
 #library(plyr)
 library(reshape2)
-library(STRINGdb)
+#library(STRINGdb)
 library(ggplot2)
 library(grid)
 library(shinydashboard)
@@ -18,7 +18,7 @@ library(rCharts)
 library(magrittr)
 library(RColorBrewer)
 library(DT)
-library(heatmap3)
+#library(heatmap3)
 library(TCGAbrowser)
 library(ComplexHeatmap)
 library(GSVAdata)
@@ -61,6 +61,8 @@ setkey(cp1, Gene)
 m1 <- combi[[4]]
 setkey(m1, Gene)
 
+gene.name2 <- unique(m1$Gene)
+
 rm(combi)
 
 cellinfo <- function(x){
@@ -73,45 +75,3 @@ cellinfo1 <- function(x){
   paste(x$name, x$level)
 }
 
-mgsub2 <- function(myrepl, mystring){
-  gsub2 <- function(l, x){
-    do.call('gsub', list(x = x, pattern = l[1], replacement = l[2]))
-  }
-  Reduce(gsub2, myrepl, init = mystring, right = T)
-}
-
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  require(grid)
-
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-
-  numPlots = length(plots)
-
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-
-  if (numPlots==1) {
-    print(plots[[1]])
-
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}

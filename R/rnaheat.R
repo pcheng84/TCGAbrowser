@@ -36,8 +36,9 @@ rnaheat <- function(pat2, rna, deg, gene) {
   df <- data.frame(as.character(pat2[!("middle"),gene2]),
                    pat2[!("middle"), exprs_rank])
   colnames(df) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
-  col1 <- list(Cell = c("high" = "#ca0020",
-                        "low" = "#0571b0"),
+  cellcol <- c("#ca0020", "#0571b0")
+  names(cellcol) <- c(levels(pat2$gene2)[1], levels(pat2$gene2)[2])
+  col1 <- list(Cell = cellcol,
                expression = colorRamp2(c(1, nrow(pat2)), c("white", "purple")))
   names(col1) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
   top_ha <- HeatmapAnnotation(df = df, col = col1)

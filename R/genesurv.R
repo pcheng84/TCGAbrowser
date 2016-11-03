@@ -36,8 +36,8 @@ genesurv <- function(pat2, gene) {
                     palette = c("#1a1a1a", "#d7191c"),
                     legend = c(0.8, 0.8),
                     legend.title = "Gene level",
-                    legend.labs = c(sprintf("%s high, n=%s\n Median OS %s years\n", gene, n[1], round(half[1],2)) ,
-                                    sprintf("%s low, n=%s\n Median OS %s years\n", gene, n[2], round(half[2],2))),
+                    legend.labs = c(sprintf("%s %s, n=%s\n Median OS %s years\n", gene, levels(pat2$gene2)[1], n[1], round(half[1],2)) ,
+                                    sprintf("%s %s, n=%s\n Median OS %s years\n", gene, levels(pat2$gene2)[2], n[2], round(half[2],2))),
                     xlab = "Time Since Biopsy (Years)")
   res$table <- res$table + theme(axis.line = element_blank())
   res

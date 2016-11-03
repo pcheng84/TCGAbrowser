@@ -26,8 +26,8 @@ plotlymut <- function(pat2, mut, genemut, gene) {
   setkey(pat2, gene2)
 
   #gets patients with rnaseq, clinical and mutation data
-  overlap.high <- intersect(pat2["high", bcr_patient_barcode], colnames(mut))
-  overlap.low <- intersect(pat2["low", bcr_patient_barcode], colnames(mut))
+  overlap.high <- intersect(pat2[levels(pat2$gene2)[1], bcr_patient_barcode], colnames(mut))
+  overlap.low <- intersect(pat2[levels(pat2$gene2)[2], bcr_patient_barcode], colnames(mut))
 
   setkey(mut, Gene)
   glist <- c(genemut$Gene[1:20], gene)
@@ -46,13 +46,13 @@ plotlymut <- function(pat2, mut, genemut, gene) {
   gg1.high <- dcast.data.table(mut1.melt.high, bcr_patient_barcode ~ Gene)
   gene.order.high <- names(sort(apply(gg1.high[,colnames(gg1.high)[-1], with=F], 2, sum), decreasing=T))
   setkeyv(gg1.high, gene.order.high)
-  mut1.melt.high[, gene2 := "high"]
+  mut1.melt.high[, gene2 := levels(pat2$gene2)[1]]
 
   mut1.melt.low <- melt(mut2, variable.name="bcr_patient_barcode", id.vars="Gene")
   gg1.low <- dcast.data.table(mut1.melt.low, bcr_patient_barcode ~ Gene)
   gene.order.low <- names(sort(apply(gg1.low[,colnames(gg1.low)[-1], with=F], 2, sum), decreasing=T))
   setkeyv(gg1.low, gene.order.low)
-  mut1.melt.low[, gene2 := "low"]
+  mut1.melt.low[, gene2 := levels(pat2$gene2)[2]]
 
   #combine mutation groups order patients according to sorting from individual dcasts
   mut1.melt <- rbind(mut1.melt.high, mut1.melt.low)
