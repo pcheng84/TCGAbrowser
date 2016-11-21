@@ -9,7 +9,7 @@
 #' @import edgeR
 #' @import limma
 #'
-#' @return data frame of RNAseq values for only patients in the high and low gene expression groups
+#' @return data frame of significant differentially expressed genes between the two groups defined in rnasubset or mutsubset
 #'
 #' @examples
 #' data(skcm)

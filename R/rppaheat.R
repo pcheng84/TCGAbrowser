@@ -26,7 +26,7 @@ rppaheat <- function(pat2, rppa, gene) {
   rppa.pat <- pat2[intersect(colnames(rppa), pat2[pat2$gene2 != "middle", name])]
 
   rppa.gene <- as.matrix(rppa[,rppa.pat$name, with=F])
-  rownames(rppa.gene) <- p1$CE.REF
+  rownames(rppa.gene) <- rppa$CE.REF
 
   setkey(rppa.pat, gene2)
   df <- data.frame(as.character(rppa.pat[!("middle"),gene2]),

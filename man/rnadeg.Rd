@@ -12,7 +12,7 @@ rnadeg(pat2, rna)
 \item{rna}{data frame of RNAseq values}
 }
 \value{
-data frame of RNAseq values for only patients in the high and low gene expression groups
+data frame of significant differentially expressed genes between the two groups defined in rnasubset or mutsubset
 }
 \description{
 Uses voom to find differentially expressed genes between the high and low groups

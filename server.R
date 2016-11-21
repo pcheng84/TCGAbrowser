@@ -34,6 +34,10 @@ function(input, output, session) {
     valueBox(paste(dim(cp1())[2]), subtitle = "Copy Number samples", color = "purple")
   })
 
+  output$rppanum <- renderValueBox({
+    valueBox(paste(dim(p1())[2]), subtitle = "RPPA samples", color = "orange")
+  })
+
   output$patnum <- renderValueBox({
     valueBox(paste(dim(pat())[1]), subtitle = "Clinical data samples", color = "black")
   })
@@ -41,19 +45,19 @@ function(input, output, session) {
 
   output$RNA <- downloadHandler(
     filename = function() {
-      paste("RNAseq_", Sys.Date(), ".txt", sep="")
+      paste("RNAseq_", Sys.Date(), ".txt", sep = "")
       },
     content = function(con) {
-      write.table(d1(), con, sep="\t", row.names=F)
+      write.table(d1(), con, sep = "\t", row.names=F)
     }
   )
 
   output$Mut <- downloadHandler(
     filename = function() {
-      paste("Mutation_", Sys.Date(), ".txt", sep="")
+      paste("Mutation_", Sys.Date(), ".txt", sep = "")
     },
     content = function(con) {
-      write.table(m1(), con, sep="\t", row.names=F)
+      write.table(m1(), con, sep = "\t", row.names=FALSE)
     }
   )
 
@@ -62,18 +66,28 @@ function(input, output, session) {
       paste("CopyNumber_", Sys.Date(), ".txt", sep="")
     },
     content = function(con) {
-      write.table(cp1(), con, sep="\t", row.names=F)
+      write.table(cp1(), con, sep = "\t", row.names = FALSE)
     }
   )
 
   output$Pat <- downloadHandler(
     filename = function() {
-      paste("Patient_", Sys.Date(), ".txt", sep="")
+      paste("Patient_", Sys.Date(), ".txt", sep = "")
     },
     content = function(con) {
-      write.table(pat(), con, sep="\t", row.names=F)
+      write.table(pat(), con, sep = "\t", row.names = FALSE)
     }
   )
+
+  output$RPPA <- downloadHandler(
+    filename = function() {
+      paste("RPPA_", Sys.Date(), ".txt", sep="")
+    },
+    content = function(con) {
+      write.table(p1(), con, sep = "\t", row.names = FALSE)
+    }
+  )
+
   testpat <- reactive({
     datasets()
     pat <- combi[[1]]
@@ -147,6 +161,19 @@ function(input, output, session) {
       m1
     }
   })
+
+  p1 <<- reactive({
+    if(!is.null(datasets())) {
+      datasets()
+      if(length(combi[[5]]) == 0) {
+        p1 <- NULL
+      } else {
+        p1 <- combi[[5]]
+        setkey(p1, Gene)
+      }
+      p1
+      }
+    })
 
   output$m1table <- renderDataTable(m1(),
                                     extensions = c('ColVis', 'Responsive'),

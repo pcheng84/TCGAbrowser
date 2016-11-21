@@ -29,6 +29,7 @@ cancers <- fread("nexus_tcga_cancer.txt")
 setkey(cancers, Cancer_name)
 
 load("./cancers/SKCM/multi.RData")
+load("./cancers/SKCM/rppa.RData")
 
 pat <- combi[[1]]
 setkey(pat, bcr_patient_barcode, name)
@@ -60,6 +61,10 @@ setkey(cp1, Gene)
 
 m1 <- combi[[4]]
 setkey(m1, Gene)
+
+p1 <- data.table(rppa)
+p1.names <- gsub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(p1))
+setnames(p1, p1.names)
 
 gene.name2 <- unique(m1$Gene)
 
