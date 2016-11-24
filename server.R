@@ -10,6 +10,7 @@ function(input, output, session) {
     sessionEnvir <- sys.frame()
     if (!is.na(input$cancername)){
      load(paste0("./cancers/", cancers[input$cancername, Cancer],"/multi.RData"), sessionEnvir)
+      load(paste0("./cancers/", cancers[input$cancername, Cancer],"/rppa.RData"), sessionEnvir)
       }}
     })
 
@@ -165,10 +166,12 @@ function(input, output, session) {
   p1 <<- reactive({
     if(!is.null(datasets())) {
       datasets()
-      if(length(combi[[5]]) == 0) {
+      if(length(rppa) == 0) {
         p1 <- NULL
       } else {
-        p1 <- combi[[5]]
+        p1 <- data.table(rppa)
+        p1.names <- gsub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(p1))
+        setnames(p1, p1.names)
         setkey(p1, Gene)
       }
       p1
@@ -324,6 +327,11 @@ function(input, output, session) {
                     Enrichment = "map",
                     Cnet = "cnet")
     plotreact(gene.react, hmap(), graph, 15)
+  })
+
+
+  output$rppaheat <- renderPlot({
+    rppaheat(pat.d1.gene(), p1(), gene())
   })
 
   graphfactor <- reactive({

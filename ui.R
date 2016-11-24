@@ -73,14 +73,19 @@ dashboardPage(
                 tabBox(title="", width=12,
                        id="cancerbox",
                        tabPanel("Datasets loaded",
-                                valueBoxOutput("RNAnum", width = 3),
-                                valueBoxOutput("mutnum", width = 3),
-                                valueBoxOutput("cpnum", width = 3),
-                                valueBoxOutput("patnum", width = 3),
-                                downloadButton("RNA", "RNAseq table"),
-                                downloadButton("Mut", "Mutation matrix"),
-                                downloadButton("Cop", "Copy number matrix"),
-                                downloadButton("Pat", "Patient table")
+                                fluidRow(
+                                valueBoxOutput("RNAnum", width = 2),
+                                valueBoxOutput("mutnum", width = 2),
+                                valueBoxOutput("cpnum", width = 2),
+                                valueBoxOutput("patnum", width = 2),
+                                valueBoxOutput("rppanum", width = 2)
+                                ),
+                                fluidRow(
+                                  downloadButton("RNA", "RNAseq table"),
+                                  downloadButton("Mut", "Mutation matrix"),
+                                  downloadButton("Cop", "Copy number matrix"),
+                                  downloadButton("Pat", "Patient table")
+                                )
                                 ),
                                 #verbatimTextOutput("test")),
                        tabPanel("Patient data table", dataTableOutput("pattable"))
@@ -108,6 +113,7 @@ dashboardPage(
                          tabPanel("Reactome Plots", selectInput("graph", "Plot",
                                                                 choices =c("Dotplot", "Enrichment", "Cnet")),
                                   plotOutput("react", height = 800)),
+                         tabPanel("RPPA Heatmap", plotOutput("rppaheat", height = 800)),
                          tabPanel("Bar graphs",
                                   selectInput("patgene",
                                               "Choose a factor:",
