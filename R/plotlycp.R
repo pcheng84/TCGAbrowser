@@ -70,8 +70,8 @@ plotlycp <- function(pat2, cp, genecp, gene) {
           axis.ticks = element_blank(),
           axis.text.x = element_blank(),
           axis.text.y = element_text(size=12),
-          axis.text.x = element_text(size=14),
-          axis.text.y = element_text(size=14),
+          axis.title.x = element_text(size=14),
+          axis.title.y = element_text(size=14),
           legend.text = element_text(size=12)) +
     ggtitle(paste(gene)) +
     facet_grid(. ~ gene2, scales = "free", space = "free")
