@@ -28,26 +28,99 @@ The workflow for TCGAbrowser is shown in the graphic below.
 knitr::include_graphics("workflow.png")
 ```
 
-#Example Gene Subset Workflow
-This vignette assumes the user already has download some TCGA data from one of the packages above. In this example, we used `r CRANpkg("TCGA2STAT")` to download the data.
+#Data download and formating
+This vignette assumes the user will use one of the R packages mentioned above to download the TCGA data. In this example, we used `r CRANpkg("TCGA2STAT")` to download the data.
 
 ```{r}
 require(TCGA2STAT)
 #download RSEM normalized gene expression values and clinical data
-rnaseq.skcm <- getTCGA(disease = "SKCM", data.type = "RNASeq2", clinical = "TRUE")
+rnaseq.skcm <- getTCGA(disease = "SKCM", data.type = "RNASeq2", clinical = TRUE)
 
 #download binary matrix of mutations
 mut.skcm <- getTCGA(disease = "SKCM", data.type = "Mutation", type = "somatic")
 
-#download copy number values
-cnv.skcm <- getTCGA(disease = "SKCM", data.table = "CNV_SNP")
+#download copy number values, remove Y chromosome genes
+cnv.skcm <- getTCGA(disease = "SKCM", data.type = "CNV_SNP", filter = "Y")
 
+#make data.table version of RNAseq data and shortens sample name
+require(data.table)
+rna <- data.table(Gene := rownames(rnaseq.skcm$dat), rnaseq.skcm$dat)
+
+#renames RNAseq data
+setnames(rna, sub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(rna)))
+
+#reorders samples alphabetically
+setcolorder(d1, order(colnames(d1)))
+
+#make data.table version of mutation data
+mut <- data.table(Gene = rownames(mut.skcm$dat), mut.skcm$dat)
+
+#make data.table version of copy number data and sets thresholds for loss and gain at -0.2 and 0.2 respectively
+cp <- data.table(Gene = rownames(cnv.skcm$dat), cnv.skcm$dat)
+for (j in seq_len(ncol(cp))[-1])  {
+    set(cp, which(cp[[j]] > 0.2),j,1)
+    set(cp, which(cp[[j]] < -0.2),j,-1)
+    set(cp, which(cp[[j]] >= -0.2 & cp[[j]] <= 0.2),j,0)
+  }
+  
+setnames(cp, sub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(cp)))
+setcolorder(cp, order(colnames(cp)))
+
+#put survival dates into one column
+pat <- data.table(bcr_patient_barcode = rownames(rnaseq.skcm$clinical), rnaseq.skcm$clinical)
+pat$days <- as.numeric(ifelse(is.na(pat$daystodeath), pat$daystolastfollowup, pat$daystodeath)) 
+pat[, years := days/365.25]
+pat[, vitalstatus := as.numeric(vitalstatus)]
+
+#adds RNAseq sample name to clinical data
+samp <- data.table(name = colnames(rna), bcr_patient_barcode = sub("(TCGA-.*?-.*?)-.*", "\\1", colnames(rna)))
+pat <- merge(pat, samp, by = "bcr_patient_barcode")
 ```
 
-`rnasubset` needs the clinical table, the RNAseq count table, a percentage cutoff and 
+#Subset by gene expression
+`rnasubset` needs the clinical table, the RNAseq count table, a gene and a percentage cutoff. It will return a data.table with 5 additional columns to the original clinical table. The level column will contain the RSEM values for the gene of interest. The exprs_rank column will contain the rank of gene expression. The high column will contain TRUE values for samples that are in the upper quantile of expression. The low column will contain TRUE values for samples that are in the lower quantile of expression. The gene2 column contains low, middle, high identifiers for which gene expression group the sample belongs to.
 
 
+```{r}
+sox10.rna <- rnasubset(pat, rna, "SOX10", 20)
+```
 
+#Expression plotting
+The new table can be used for downstream analysis and plotting functions. `plotlygenelevel` and `hchartgenelevel` will use plotly and highcharter to plot the gene expression of your gene of interest across all samples with coloring for the low, middle and high groups. 
+
+```{r}
+plotlygenelevel(sox10.rna)
+hchartgenelevel(sox10.rna)
+```
+
+#Survival Analysis
+`genesurv` will plot a kaplan-meier plot using `r CRANpkg("survminer")` comparing the high and low group
+
+```{r}
+genesurv(sox10.rna, "SOX10")
+```
+
+#Differential gene expression analysis
+`rnadeg` will use voom from the `r Biocpkg("limma")` package to calculate the genes differentially expressed between the high and low group
+
+```{r}
+sox10.deg <- rnadeg(sox10.rna, rna)
+sox10.deg
+```
+
+`rnaheat` will plot a heatmap of the top 100 most significant differentially expressed genes with `r CRANpkg("ComplexHeatmap")`
+
+```{r}
+rnaheat(sox10.rna, rna, sox10.deg, "SOX10")
+```
+
+#GSVA analysis
+`rnagsva` will use `r Biocpkg("GSVA")` to calculate the GSVA enrichment scores for all samples. `rnagsvadeg` will use `r Biocpkg("limma")` to determine the significant differences in GSVA enrichment scores between the high and low group. `rnagsvaheat` will use `r CRANpkg("ComplexHeatmap")` to display a heatmap of the top 100 most signifcant pathways
+
+```{r}
+sox10.gsva <- rnagsva(sox10.rna, rna)
+sox10.gsvasig <- rnagsvasig(sox10.rna, sox10.gsva)
+```
 
 ## Vignette Info
 
