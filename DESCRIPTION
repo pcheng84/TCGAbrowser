@@ -1,13 +1,35 @@
 Package: TCGAbrowser
 Type: Package
-Title: Explores TCGA Data
+Title: Explores and Analyzses TCGA Data
 Version: 0.1.0
-Author: Phil Cheng
-Maintainer: Phil Cheng <phil.cheng@usz.ch>
+Authors@R: person("Phil", "Cheng", email = "phil.cheng@usz.ch", role = c("aut", "cre"))
 Description: Survival and Differential expression analysis of TCGA Data
     Integrative analysis of mutation, copy number and clinical characteristics based
     on RNAseq
+Imports: data.table, 
+    ComplexHeatmap, 
+    DOSE, 
+    GSVA, 
+    GSVAdata, 
+    MultiAssayExperiment, 
+    ReactomePA, 
+    circlize,
+    dplyr,
+    edgeR,
+    gage,
+    ggplot2,
+    grid,
+    limma,
+    magrittr,
+    parallel,
+    plotly,
+    survival,
+    survminer
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
+Suggests: knitr, 
+    rmarkdown, 
+    BiocStyle
+VignetteBuilder: knitr

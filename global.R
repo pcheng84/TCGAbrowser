@@ -28,8 +28,8 @@ data(kegg.gs)
 cancers <- fread("nexus_tcga_cancer.txt")
 setkey(cancers, Cancer_name)
 
-load("./cancers/SKCM/multi.RData")
-load("./cancers/SKCM/rppa.RData")
+load("./data/cancers/SKCM/multi.RData")
+load("./data/cancers/SKCM/rppa.RData")
 
 pat <- combi[[1]]
 setkey(pat, bcr_patient_barcode, name)

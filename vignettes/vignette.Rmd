@@ -1,0 +1,92 @@
+---
+title: "TCGAbrowser workflow"
+author: "Phil Cheng"
+date: "`r doc_date()`"
+package: "`r pkg_ver('TCGAbrowser')`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{TCGAbrowser workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+The Cancer Genome Atlas has provided a comprehensive omics study of 33 cancers. The National Cancer Institute (NCI) has made this data pubically available on the Genomic Data Commons [(GDC)](https://gdc-portal.nci.nih.gov/) Data Portal. There are several R packages that download the data, `r Biocpkg("RTCGAToolbox")`, `r Biocpkg("RTCGA")`, `r Biocpkg("TCGAbiolinks")`, `r CRANpkg("TCGA2STAT")`, `r Biocpkg("MultiAssayExperiment")`, and [TCGA-Assembler](http://www.compgenome.org/TCGA-Assembler/).
+
+The motivation for TCGAbrowser was to provide convenience functions and wrappers to analyze the omics datasets by gene expression or mutation subsetting. Typically, biologists are studying one gene in one cancer by overexpression and/or knockdown experiments. TCGAbrowser was designed to subset the datasets by gene expression or gene mutation and perform differential gene expresion, mutation, copy number, protein and survival analysis. 
+
+# Installation
+To install TCGAbrowser use the code below.
+```{r}
+require(devtools)
+devtools::install_github("pcheng84/TCGAbrowser")
+```
+
+The workflow for TCGAbrowser is shown in the graphic below.
+
+```{r, out.width = "50%", echo = FALSE}
+knitr::include_graphics("workflow.png")
+```
+
+#Example Gene Subset Workflow
+This vignette assumes the user already has download some TCGA data from one of the packages above. In this example, we used `r CRANpkg("TCGA2STAT")` to download the data.
+
+```{r}
+require(TCGA2STAT)
+#download RSEM normalized gene expression values and clinical data
+rnaseq.skcm <- getTCGA(disease = "SKCM", data.type = "RNASeq2", clinical = "TRUE")
+
+#download binary matrix of mutations
+mut.skcm <- getTCGA(disease = "SKCM", data.type = "Mutation", type = "somatic")
+
+#download copy number values
+cnv.skcm <- getTCGA(disease = "SKCM", data.table = "CNV_SNP")
+
+```
+
+`rnasubset` needs the clinical table, the RNAseq count table, a percentage cutoff and 
+
+
+
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

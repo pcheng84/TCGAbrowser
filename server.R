@@ -9,8 +9,8 @@ function(input, output, session) {
 
     sessionEnvir <- sys.frame()
     if (!is.na(input$cancername)){
-     load(paste0("./cancers/", cancers[input$cancername, Cancer],"/multi.RData"), sessionEnvir)
-      load(paste0("./cancers/", cancers[input$cancername, Cancer],"/rppa.RData"), sessionEnvir)
+     load(paste0("./data/cancers/", cancers[input$cancername, Cancer],"/multi.RData"), sessionEnvir)
+      load(paste0("./data/cancers/", cancers[input$cancername, Cancer],"/rppa.RData"), sessionEnvir)
       }}
     })
 
