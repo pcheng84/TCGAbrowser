@@ -1,7 +1,7 @@
 #loading tcga data list
-load("cancers/SKCM/multi.RData")
-load("cancers/SKCM/rppa.RData")
-load("cancers/SKCM/cnasnp.RData")
+load("data/cancers/SKCM/multi.RData")
+load("data/cancers/SKCM/rppa.RData")
+load("data/cancers/SKCM/cnasnp.RData")
 library(devtools)
 library(data.table)
 library(TCGAbrowser)
@@ -34,8 +34,8 @@ pat$age_group <- cut(pat$yearstobirth + pat$daystosubmittedspecimendx/365.25, br
 pat
 
 #start test analysis
-gene <- "SOX10"
-percent <- 10
+gene <- "NRAS"
+percent <- 20
 sox10 <- rnasubset(pat, combi[[2]], gene, percent)
 
 #could use cut to define patient groups
@@ -44,7 +44,7 @@ cut(sox10$level, quantile(sox10$level, probs=c(0, 0.25, 0.75, 1)) ,labels = c("l
 
 library(survival)
 library(survminer)
-
+library(RColorBrewer)
 #analysis for Tobias
 INHBA
 CYR61
@@ -242,7 +242,7 @@ library(GSVA)
 library(GSEABase)
 library(GSVAdata)
 data(c2BroadSets)
-
+lookup <- fread("140428_TCGA_Entrez_Gene.txt")
 d1.gsva <- as.matrix(rna[,pat2[!("middle"), name], with=F])
 rownames(d1.gsva) <- lookup$entrez[match(rna$Gene, lookup$gene)]
 testgsva <- gsva(d1.gsva, c2BroadSets, min.sz=5, max.sz=500, mx.diff=TRUE, verbose=FALSE, rnaseq=TRUE)
@@ -516,13 +516,13 @@ write.table(tp53.mut, "SKCM_TP53_25_mutation.txt", sep="\t", row.names=F)
 library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
 data(IlluminaHumanMethylation450kanno.ilmn12.hg19)
 
-load("cancers/SKCM/met.RData")
+load("data/cancers/SKCM/met.RData")
 
 met1 <- data.table(REF = rownames(met), met)
 
 z2 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
 
-methylannot <- data.table("REF" = rownames(z2), "Island" = z2@listData$Relation_to_Island, "Island_Name" = z2@listData$Islands_Name, "Gene" = z2@listData$UCSC_RefGene_Name)
+methylannot <- data.table("REF" = rownames(z2), "Chr" = z2@listData$chr, "Loc" = z2@listData$pos, "Island" = z2@listData$Relation_to_Island, "Island_Name" = z2@listData$Islands_Name, "Gene" = z2@listData$UCSC_RefGene_Name)
 setkey(methylannot, "Island")
 
 methylannot1 <- methylannot["Island"]
@@ -532,7 +532,7 @@ methyltest5a <- na.omit(methyltest4)
 methyltest5b <- na.omit(methyltest4, invert=T)
 setkey(methyltest5b, REF)
 
-methyltest6 <- methyltest4[, lapply(.SD, function(x)median(x, na.rm=T)), .SDcols = !c("REF", "Gene", "Hugo_Symbol", "Island"), by="Island_Name"]
+methyltest6 <- methyltest4[, lapply(.SD, function(x)median(x, na.rm=T)), .SDcols = !c("REF", "Chr", "Loc", "Island", "Gene", "Hugo_Symbol"), by="Island_Name"]
 methyltest7 <- na.omit(methyltest6)
 methyltest8 <- merge(methyltest7, unique(methyltest4[, .(Island_Name, Hugo_Symbol)]), by="Island_Name")
 setnames(methyltest8, colnames(methyltest8), sub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(methyltest8)))
@@ -540,7 +540,8 @@ methyltest8
 
 test1 <- as.numeric(methyltest8[450, setdiff(colnames(methyltest8), c("REF", "Hugo_Symbol", "Island", "Island_Name")), with = FALSE])
 plot(density(test1))
-plot(density(asin(sqrt(test1))))
+plot(density(asin(test1) * 2/pi))
+
 
 
 pat <- fread("/data/Phil/TCGA_SKCM_141203/shinyapp/megatev2/141203_TCGA_patient_shiny_SKCM.txt")
@@ -557,3 +558,51 @@ methylshiny2 <- methylshiny[!(is.na(methylshiny$GeneSymbol))]
 
 library(TCGAbiolinks)
 
+library(COHCAP)
+dir = system.file("extdata", package="COHCAP")
+beta.file = file.path(dir,"GSE42308_truncated.txt")
+sample.file = file.path(dir,"sample_GSE42308.txt")
+expression.file = file.path(dir,"expression-Average_by_Island_truncated.txt")
+project.folder = getwd()
+project.name = "450k_avg_by_island_test"
+
+beta.table = COHCAP.annotate(beta.file, project.name, project.folder, platform="450k-UCSC")
+COHCAP.qc(sample.file, beta.table, project.name, project.folder)
+filtered.sites = COHCAP.site(sample.file, beta.table, project.name, project.folder, ref="parental")
+island.list = COHCAP.avg.by.island(sample.file, filtered.sites, beta.table, project.name, project.folder, ref="parental")
+
+#start test analysis
+gene <- "SOX10"
+percent <- 10
+sox10 <- rnasubset(pat, combi[[2]], gene, percent)
+setkey(sox10, gene2)
+sox10[c("high" ,"low"), .(name, gene2)]
+methylannot2 <- data.table("SiteID" = rownames(z2), "Chr" = z2@listData$chr, "Loc" = z2@listData$pos, "Gene" = z2@listData$UCSC_RefGene_Name, "Island" = z2@listData$Islands_Name)
+met1
+met1.names <- gsub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(met1))
+setnames(met1, met1.names)
+met.sox10 <- intersect(sox10[!"middle", name], colnames(met1))
+met2 <- met1[, c("REF", met.sox10), with = FALSE]
+
+met3 <- merge(methylannot2, met2, by.x = "SiteID", by.y = "REF")
+met4 <- met3[complete.cases(met3)]
+setkey(sox10, name)
+write.table(sox10[met.sox10, .(name, gene2)], "test.txt", col.names = F, row.names = F, sep = "\t")
+b2 <- COHCAP.site("test.txt", met3, "SKCM_sox10_methyl", project.folder, ref = "low")
+
+
+#Having fun with GenVisR
+library(GenVisR)
+skcmmaf <- fread("data/TCGA.SKCM.mutect.20baf774-96e1-406c-80ac-16223854c34a.somatic.maf")
+waterfall(skcmmaf, mainRecurCutoff = 0.30)
+
+setkey(skcmmaf, Variant_Classification)
+skcmmaf2 <- skcmmaf[c("Missense_Mutation", "Nonsense_Mutation", "Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "Nonstop_Mutation", "In_Frame_Ins")]
+waterfall(skcmmaf2, mainRecurCutoff = 0.25)
+
+setkey(skcmmaf2, Hugo_Symbol)
+
+skcmmaf3 <- skcmmaf2[c("BRAF", "NRAS", "HRAS", "KRAS", "NF1", "CDKN2A", "TP53", "PPP6C", "ARID2", "PTEN", "IDH1", "MAP2K1", "DDX3X", "RAC1", "RB1")]
+waterfall(skcmmaf3)
+
+TvTi(skcmmaf, lab_txtAngle=75, fileType="MAF")

@@ -144,26 +144,57 @@ ecor <- function(x1, y1) {
   ggsave(sprintf("Eylul_%s_%s_correlation.pdf", x1, y1), plot = gg1, width=6, height=6)
 }
 
-ecor("BMP7", "AXL")
-ecor("BMP7", "MITF")
-ecor("BMP7", "SMAD7")
-ecor("BMP7", "SOX10")
-ecor("BMP7", "SOX9")
-ecor("BMP7", "TGFB2")
-ecor("BMP7", "WNT5A")
-ecor("BMP7", "ZEB1")
-ecor("BMP7", "ZEB2")
+#Gaea analysis p75
 
-ecor("TGFB2", "AXL")
-ecor("TGFB2", "MITF")
-ecor("TGFB2", "SMAD7")
-ecor("TGFB2", "SOX10")
-ecor("TGFB2", "SOX9")
-ecor("TGFB2", "BMP7")
-ecor("TGFB2", "WNT5A")
-ecor("TGFB2", "ZEB1")
-ecor("TGFB2", "ZEB2")
+#get primary patients
+pat.pri <- pat[grep("-01", pat$name)]
+pat.pri.name <- intersect(pat.pri$name, colnames(combi[[2]]))
+rna <- combi[[2]]
+rna.pri <- rna[, c("Gene", pat.pri.name), with= FALSE]
 
-library(corrplot)
-eycor2 <- cor(ey.cor2[, .(AXL, BMP7, MITF, SMAD7, SOX10, SOX9, TGFB2, WNT5A, ZEB1, ZEB2)])
-corrplot(eycor2, order = "hclust")
+gene <- "NGFR"
+percent <- 25
+pat.rna <- rna.pri
+setkey(pat.rna, Gene)
+high <- round((ncol(pat.rna) - 1) - percent/100 * (ncol(pat.rna)-1), digits=0 )
+low <- round((ncol(pat.rna) - 1) * percent/100, digits=0)
+
+pat.rna.gene <- melt.data.table(pat.rna[gene, setdiff(colnames(pat.rna), "Gene"), with=F], id.vars = NULL, measure.vars = colnames(pat.rna)[-1], variable.name = "name", value.name="level")
+setkey(pat.rna.gene, level)
+pat.rna.gene$exprs_rank <- 1:nrow(pat.rna.gene)
+pat.rna.gene[, high := level > level[eval(high)]]
+pat.rna.gene[, low := level <= level[eval(low)]]
+pat.rna.gene[, gene2 := factor(c(rep("low", eval(low)), rep("middle", eval(high - low)), rep("high", eval(ncol(pat.rna) - 1 - high))))]
+pat.rna.gene
+pat.rna.gene$gene2 <-factor(c(rep("low", eval(low)), rep("middle", eval(high - low)), rep("high", eval(ncol(pat.rna) - 1 - high))))
+
+phenosgene <- merge(pat, pat.rna.gene, by= "name")
+phenosgene
+genesurv(phenosgene, "NGFR")
+
+
+##looking at mets
+pat.pri <- pat[grep("-06", pat$name)]
+pat.pri.name <- intersect(pat.pri$name, colnames(combi[[2]]))
+rna <- combi[[2]]
+rna.pri <- rna[, c("Gene", pat.pri.name), with= FALSE]
+
+gene <- "NGFR"
+percent <- 25
+pat.rna <- rna.pri
+setkey(pat.rna, Gene)
+high <- round((ncol(pat.rna) - 1) - percent/100 * (ncol(pat.rna)-1), digits=0 )
+low <- round((ncol(pat.rna) - 1) * percent/100, digits=0)
+
+pat.rna.gene <- melt.data.table(pat.rna[gene, setdiff(colnames(pat.rna), "Gene"), with=F], id.vars = NULL, measure.vars = colnames(pat.rna)[-1], variable.name = "name", value.name="level")
+setkey(pat.rna.gene, level)
+pat.rna.gene$exprs_rank <- 1:nrow(pat.rna.gene)
+pat.rna.gene[, high := level > level[eval(high)]]
+pat.rna.gene[, low := level <= level[eval(low)]]
+pat.rna.gene[, gene2 := factor(c(rep("low", eval(low)), rep("middle", eval(high - low)), rep("high", eval(ncol(pat.rna) - 1 - high))))]
+pat.rna.gene
+pat.rna.gene$gene2 <-factor(c(rep("low", eval(low)), rep("middle", eval(high - low)), rep("high", eval(ncol(pat.rna) - 1 - high))))
+
+phenosgene <- merge(pat, pat.rna.gene, by= "name")
+phenosgene
+genesurv(phenosgene, "NGFR")
