@@ -19,7 +19,8 @@
 #'
 plotlygenelevel <- function(data) {
   setkey(data, level)
-  data[, name := factor(name, levels=name)]
-  data[, `expression (log2)` := log(level + 1, 2)]
-  plot_ly(data = data, x = ~name, y = ~`expression (log2)`, type= "bar", color = ~gene2)
+  data[, `:=` (name2 = factor(name, levels=name),
+               `expression (log2)` = log(level + 1, 2)
+               )]
+  plot_ly(data = data, x = ~name2, y = ~`expression (log2)`, type= "bar", color = ~gene2)
 }

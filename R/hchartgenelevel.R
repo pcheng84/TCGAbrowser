@@ -19,6 +19,6 @@
 #'
 hchartgenelevel <- function(data) {
   setkey(data, level)
-  data[, `:=` (name = factor(name, levels=name))]
-  hchart(data, "scatter", x = name, y = level, color = gene2)
+  data[, `:=` (name2 = factor(name, levels=name))]
+  hchart(data, "scatter", x = name2, y = level, color = gene2)
 }
