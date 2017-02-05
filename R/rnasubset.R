@@ -31,7 +31,7 @@ rnasubset <- function(pat, rna, gene, percent) {
   #pat.rna.gene[, ':=' (high = level > level[eval(high)], low = level <= level[eval(low)])]
   #pat.rna.gene[, high := level > level[eval(high)]]
   #pat.rna.gene[, low := level <= level[eval(low)]]
-  pat.rna.gene[, gene2 := factor(c(rep("low", times = eval(low)), rep("middle", times = eval(high - low)), rep("high", times = eval(ncol(pat.rna) - 1 - high))))]
+  pat.rna.gene[, `:=` (gene2 = factor(c(rep("low", times = eval(low)), rep("middle", times = eval(high - low)), rep("high", times = eval(ncol(pat.rna) - 1 - high)))))]
   phenosgene <- merge(pat, pat.rna.gene, by= "name")
   phenosgene
 }
