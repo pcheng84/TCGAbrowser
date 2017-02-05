@@ -19,7 +19,7 @@
 #' gene <- "SOX10"
 #' sox10.pat <- rnasubset(pat, rna, gene, 10)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
-#' sox10.react <- rnareact(sox10.deg, lookup)
+#' sox10.react <- rnareact(sox10.deg)
 #' plotreact(sox10.react, sox10.deg, "dot", 15)
 #' plotreact(sox10.react, sox10.deg, "map", 15)
 #' plotreact(sox10.react, sox10.deg, "cnet", 5)
