@@ -17,11 +17,11 @@
 #' gene <- "SOX10"
 #' sox10.pat <- rnasubset(pat, rna, gene, 10)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
-#' sox10.react <- rnareact(sox10.deg, lookup)
+#' sox10.react <- rnareact(sox10.deg)
 #'
 #' @export
 #'
-rnareact <- function(deg, lookup) {
+rnareact <- function(deg) {
   limma.fc <- deg$logFC
   names(limma.fc) <- lookup$entrez[match(deg$genes, lookup$gene)]
   limma.names <- lookup$entrez[match(deg$genes, lookup$gene)]
