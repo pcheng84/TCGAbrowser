@@ -25,4 +25,3 @@ sox10.gsva <- rnagsva(sox10.pat, rna)
 sox10.gsva.sig <- rnagsvasig(sox10.pat, sox10.gsva)
 
 }
-

@@ -24,4 +24,3 @@ sox10.pat <- rnasubset(pat, rna, gene, 10)
 sox10.deg <- rppadeg(sox10.pat, rppa)
 
 }
-

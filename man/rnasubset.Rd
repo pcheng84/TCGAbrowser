@@ -2,6 +2,7 @@
 % Please edit documentation in R/patsubset.R, R/rnasubset.R
 \name{rnasubset}
 \alias{rnasubset}
+\alias{rnasubset}
 \title{rnasubset function}
 \usage{
 rnasubset(pat, rna, gene, percent)
@@ -43,4 +44,3 @@ data(skcm)
 rnasubset(pat, rna, "SOX10", 10)
 
 }
-

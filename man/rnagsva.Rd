@@ -24,4 +24,3 @@ sox10.pat <- rnasubset(pat, rna, gene, 10)
 sox10.gsva <- rnagsva(sox10.pat, rna)
 
 }
-

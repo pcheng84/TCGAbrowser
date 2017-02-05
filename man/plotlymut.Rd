@@ -29,4 +29,3 @@ sox10.mut <- diffmut(sox10.pat, mut)
 plotlymut(sox10.pat, mut, sox10.mut, gene)
 
 }
-

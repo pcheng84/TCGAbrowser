@@ -24,4 +24,3 @@ sox10 <- rnasubset(pat, rna, gene, 10)
 genesurv(sox10, gene)
 
 }
-

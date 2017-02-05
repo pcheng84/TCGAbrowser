@@ -29,4 +29,3 @@ sox10.cp <- diffcp(sox10.pat, cp)
 plotlycp(sox10.pat, cp, sox10.cp, gene)
 
 }
-

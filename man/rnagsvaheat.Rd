@@ -30,4 +30,3 @@ sox10.gsva.sig <- rnagsvasig(sox10.pat, sox10.gsva)
 rnagsvaheat(sox10.pat, sox10.gsva, sox10.gsva.sig, gene)
 
 }
-

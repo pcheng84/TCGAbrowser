@@ -26,4 +26,3 @@ data(skcm)
 mutsubset(pat, rna, mut, "SOX10")
 
 }
-

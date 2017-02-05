@@ -32,4 +32,3 @@ plotreact(sox10.react, sox10.deg, "map", 15)
 plotreact(sox10.react, sox10.deg, "cnet", 5)
 
 }
-

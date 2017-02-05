@@ -23,4 +23,3 @@ sox10.pat <- rnasubset(pat, rna, gene, 10)
 diffcp(sox10.pat, cp)
 
 }
-

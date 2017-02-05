@@ -25,4 +25,3 @@ sox10.deg <- rnadeg(sox10.pat, rna)
 sox10.gage <- rnagage(sox10.deg, lookup)
 
 }
-

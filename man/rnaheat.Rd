@@ -29,4 +29,3 @@ sox10.deg <- rnadeg(sox10.pat, rna)
 rnaheat(sox10.pat, rna, sox10.deg, gene)
 
 }
-

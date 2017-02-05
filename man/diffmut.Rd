@@ -24,4 +24,3 @@ sox10 <- rnasubset(pat, rna, gene, 10)
 diffmut(sox10, mut, gene)
 
 }
-
