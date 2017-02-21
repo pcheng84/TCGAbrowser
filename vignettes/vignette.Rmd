@@ -20,6 +20,7 @@ To install TCGAbrowser use the code below.
 ```{r}
 require(devtools)
 devtools::install_github("pcheng84/TCGAbrowser")
+require(TCGAbrowser)
 ```
 
 The workflow for TCGAbrowser is shown in the graphic below.
@@ -44,13 +45,13 @@ cnv.skcm <- getTCGA(disease = "SKCM", data.type = "CNV_SNP", filter = "Y")
 
 #make data.table version of RNAseq data and shortens sample name
 require(data.table)
-rna <- data.table(Gene := rownames(rnaseq.skcm$dat), rnaseq.skcm$dat)
+rna <- data.table(Gene = rownames(rnaseq.skcm$dat), rnaseq.skcm$dat)
 
 #renames RNAseq data
 setnames(rna, sub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(rna)))
 
 #reorders samples alphabetically
-setcolorder(d1, order(colnames(d1)))
+setcolorder(rna, order(colnames(rna)))
 
 #make data.table version of mutation data
 mut <- data.table(Gene = rownames(mut.skcm$dat), mut.skcm$dat)
@@ -66,10 +67,44 @@ for (j in seq_len(ncol(cp))[-1])  {
 setnames(cp, sub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(cp)))
 setcolorder(cp, order(colnames(cp)))
 
+#get rppa data
+
+'%&%' <- function(a, b) paste(a, b, sep="")
+getTCGA_rppa = function(disease){
+  # disease = "BRCA"
+  ldoc <- XML::htmlTreeParse("http://gdac.broadinstitute.org/runs/stddata__latest/", useInternalNodes = T)
+  llinks = unlist(XML::xpathApply(ldoc, "//a[@href]", XML::xmlGetAttr, "href"))
+  d.links = grep("/data/" %&% disease,llinks,value = T)
+  ddoc = XML::htmlTreeParse(d.links, useInternalNodes = T)
+  keyWord = "//a[contains(@href, 'RPPA')]"
+  plinks = XML::xpathSApply(ddoc, keyWord, XML::xmlGetAttr, 'href')
+  plinks = plinks[grepl("Level_3.*.gz$", plinks)]
+  download.file(d.links %&% "/" %&% plinks, destfile = "temp.tar.gz")
+  untar("temp.tar.gz")
+  file.remove("temp.tar.gz")
+  infile = sub("^(gdac.broadinstitute.org_.*).tar.gz$", "\\1", plinks) 
+  #annot = fread(infile %&% "/" %&% disease %&% ".antibody_annotation.txt")
+  if(file.exists(infile %&% "/" %&% disease %&% ".rppa.txt")){
+    rppa = read.table(infile %&% "/" %&% disease %&% ".rppa.txt", sep="\t", head=T, stringsAsFactors = F)
+    names(rppa) = gsub("\\.","-",names(rppa))
+    t.ceref = t(sapply(rppa$'Composite-Element-REF', function(x) unlist(strsplit(x, "\\|")[[1]])))
+    rppa$Gene = t.ceref[,1]
+    rppa$CE.REF = t.ceref[,2]
+    rppa = rppa[,c(ncol(rppa)-1,ncol(rppa),2:(ncol(rppa)-2))]
+   } else {
+    rppa = "file not found"
+  } 
+  unlink(infile, recursive=TRUE)
+  rppa
+}
+
+rppa <- data.table(getTCGA_rppa("SKCM"))
+setnames(rppa, sub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(rppa)))
+
 #put survival dates into one column
 pat <- data.table(bcr_patient_barcode = rownames(rnaseq.skcm$clinical), rnaseq.skcm$clinical)
 pat$days <- as.numeric(ifelse(is.na(pat$daystodeath), pat$daystolastfollowup, pat$daystodeath)) 
-pat[, years := days/365.25]
+pat[, TCGA_year := days/365.25]
 pat[, vitalstatus := as.numeric(vitalstatus)]
 
 #adds RNAseq sample name to clinical data
@@ -119,6 +154,8 @@ rnaheat(sox10.rna, rna, sox10.deg, "SOX10")
 `rnagsva` will use `r Biocpkg("GSVA")` to calculate the GSVA enrichment scores for all samples. `rnagsvadeg` will use `r Biocpkg("limma")` to determine the significant differences in GSVA enrichment scores between the high and low group. `rnagsvaheat` will use `r CRANpkg("ComplexHeatmap")` to display a heatmap of the top 100 most signifcant pathways
 
 ```{r}
+require(GSVAdata)
+data(c2BroadSets)
 sox10.gsva <- rnagsva(sox10.rna, rna)
 sox10.gsvasig <- rnagsvasig(sox10.rna, sox10.gsva)
 rnagsvaheat(sox10.rna, sox10.gsva, sox10.gsvasig, "SOX10")
@@ -161,7 +198,7 @@ plotlycp(sox10.rna, cp, sox10.cp, "SOX10")
 `rppadeg` will match the samples from the high and low group and use `r Biocpkg("limma")` to determine differential protein expression. `rppaheat` will draw the heatmap for all significant differentially expressed proteins
 
 ```{r}
-rppaheat(sox10.rna, rppa)
-sox10.rppa <- rppasig(sox10.rna, rppa)
+#rppaheat(sox10.rna, rppa, "SOX10")
+sox10.rppa <- rppadeg(sox10.rna, rppa)
 ```
 
