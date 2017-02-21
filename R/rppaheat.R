@@ -27,7 +27,7 @@ rppaheat <- function(pat2, rppa, gene) {
 
   rppa.gene <- as.matrix(rppa[,rppa.pat$name, with=F])
   rownames(rppa.gene) <- rppa$CE.REF
-
+  rppa.gene <- rppa.gene[complete.cases(rppa.gene),]
   setkey(rppa.pat, gene2)
   df <- data.frame(as.character(rppa.pat[!("middle"),gene2]),
                    rppa.pat[!("middle"), exprs_rank])
