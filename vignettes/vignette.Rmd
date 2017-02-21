@@ -17,7 +17,7 @@ The motivation for TCGAbrowser was to provide convenience functions and wrappers
 
 # Installation
 To install TCGAbrowser use the code below.
-```{r}
+```{r, message = FALSE, warning = FALSE}
 require(devtools)
 devtools::install_github("pcheng84/TCGAbrowser")
 require(TCGAbrowser)
@@ -32,7 +32,7 @@ knitr::include_graphics("workflow.png")
 #Data download and formating
 This vignette assumes the user will use one of the R packages mentioned above to download the TCGA data. In this example, we used `r CRANpkg("TCGA2STAT")` to download the data.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 require(TCGA2STAT)
 #download RSEM normalized gene expression values and clinical data
 rnaseq.skcm <- getTCGA(disease = "SKCM", data.type = "RNASeq2", clinical = TRUE)
@@ -153,7 +153,7 @@ rnaheat(sox10.rna, rna, sox10.deg, "SOX10")
 #GSVA pathway analysis
 `rnagsva` will use `r Biocpkg("GSVA")` to calculate the GSVA enrichment scores for all samples. `rnagsvadeg` will use `r Biocpkg("limma")` to determine the significant differences in GSVA enrichment scores between the high and low group. `rnagsvaheat` will use `r CRANpkg("ComplexHeatmap")` to display a heatmap of the top 100 most signifcant pathways
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 require(GSVAdata)
 data(c2BroadSets)
 sox10.gsva <- rnagsva(sox10.rna, rna)
@@ -198,7 +198,7 @@ plotlycp(sox10.rna, cp, sox10.cp, "SOX10")
 `rppadeg` will match the samples from the high and low group and use `r Biocpkg("limma")` to determine differential protein expression. `rppaheat` will draw the heatmap for all significant differentially expressed proteins
 
 ```{r}
-#rppaheat(sox10.rna, rppa, "SOX10")
+rppaheat(sox10.rna, rppa, "SOX10")
 sox10.rppa <- rppadeg(sox10.rna, rppa)
 ```
 
