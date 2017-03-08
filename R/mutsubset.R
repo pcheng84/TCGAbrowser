@@ -21,7 +21,7 @@ mutsubset <- function(pat, rna, mut, gene) {
   mutpat <- intersect(pat$bcr_patient_barcode, colnames(mut))
   setkey(pat, bcr_patient_barcode)
   pat2 <- pat[mutpat, ,mult = "first"]
-
+  setkey(rna, Gene)
   pat2[, gene := as.numeric(mut[gene, mutpat, with = FALSE])]
   pat2[, gene2 := factor(gene, levels = 1:0, labels =c("Mutated", "WT"))]
   pat2$level <- as.numeric(rna[gene, pat2$name, with = FALSE])

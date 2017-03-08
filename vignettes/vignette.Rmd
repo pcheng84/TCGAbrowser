@@ -263,20 +263,20 @@ head(nras.deg)
 
 `rnaheat` will produce the heatmap with the top 100 differentially expressed genes between the NRAS wild-type and mutated populations
 
-```{r, eval = FALSE}
+```{r}
 rnaheat(nras.mut, rna, nras.deg, "NRAS")
 ```
 
 ##GSVA pathway analysis
 The significant pathways between the NRAS wild-type and mutant populations can be determined by `rnagsva` and `rnagsvasig`, and visualized with `rnagsvaheat`.
 
-```{r, message = FALSE, warning = FALSE, , eval = FALSE}
+```{r, message = FALSE, warning = FALSE}
 require(GSVAdata)
 data(c2BroadSets)
 nras.gsva <- rnagsva(nras.mut, rna)
-nras.gsvasig <- rnagsvasig(nras.rna, nras.gsva)
+nras.gsvasig <- rnagsvasig(nras.mut, nras.gsva)
 head(nras.gsvasig)
-rnagsvaheat(nras.rna, nras.gsva, nras.gsvasig, "NRAS")
+rnagsvaheat(nras.mut, nras.gsva, nras.gsvasig, "NRAS")
 ```
 
 ##Reactome pathway analysis
@@ -317,7 +317,7 @@ plotlycp(nras.mut, cp, nras.cp, "NRAS")
 ##Differential RPPA analysis
 The differentially expressed proteins between the NRAS wild-type and NRAS mutant populations can be determined by `rppadeg` and visualized with `rppaheat`.
 
-```{r, eval = FALSE}
+```{r}
 rppaheat(nras.mut, rppa, "NRAS")
 nras.rppa <- rppadeg(nras.mut, rppa)
 head(nras.rppa)
