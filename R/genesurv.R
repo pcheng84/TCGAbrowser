@@ -27,6 +27,7 @@ genesurv <- function(pat2, gene) {
   half <- summary(survplot)$table[,"median"]
   n <- summary(survplot)$table[,"records"]
   res <- ggsurvplot(survplot,
+                    data = pat2[!("middle")],
                     pval=T,
                     pval.coord = c(1,0.1),
                     conf.int = T,
