@@ -39,7 +39,7 @@ Plotting functions include: `genesurv` for Kaplan-Meier survival plots; `plotlym
 
 
 #Data download and formating
-This vignette assumes the user will use one of the R packages mentioned above to download the TCGA data. In this example, we used `r CRANpkg("TCGA2STAT")` to download the data. We also used a customized function to download the RPPA data. Some processing steps are needed for the data.frames to be used in TCGAbrowser.
+This vignette assumes the user will use one of the R packages mentioned above to download the TCGA data. In this example, we used `r CRANpkg("TCGA2STAT")` to download the data. We also used a customized function to download the RPPA data. Some processing steps are needed for the data.frames to be used in TCGAbrowser. 
 
 ```{r, message = FALSE, warning = FALSE}
 require(TCGA2STAT)
