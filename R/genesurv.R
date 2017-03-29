@@ -41,5 +41,5 @@ genesurv <- function(pat2, gene) {
                                     sprintf("%s %s, n=%s\n Median OS %s years\n", gene, levels(pat2$gene2)[2], n[2], round(half[2],2))),
                     xlab = "Time Since Biopsy (Years)")
   res$table <- res$table + theme(axis.line = element_blank())
-  res
+  print(res)
 }
