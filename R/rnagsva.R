@@ -27,5 +27,5 @@ rnagsva <- function(pat2, rna) {
   setkey(pat2, gene2)
   d1.gsva <- as.matrix(rna[,pat2[!("middle"), name], with=F])
   rownames(d1.gsva) <- lookup$entrez[match(rna$Gene, lookup$gene)]
-  gsva(d1.gsva, c2BroadSets, min.sz=5, max.sz=500, mx.diff=TRUE, verbose=TRUE, rnaseq=TRUE)
+  gsva(d1.gsva, c2BroadSets, method = "gsva", min.sz=5, max.sz=500, mx.diff=TRUE, verbose=TRUE, kcdf="Poisson")
 }
