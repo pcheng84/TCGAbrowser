@@ -19,10 +19,10 @@
 #'
 #' @export
 #'
-rnagsvasig <- function(pat2, rnagsva) {
+rnagsvasig <- function(pat2, rnagsva_out) {
   setkey(pat2, gene2)
-  design <- model.matrix(~factor(pat2[!("middle"),gene2], levels=c(levels(pat2$gene2)[2], levels(pat2$gene2)[1])))
-  fit <- lmFit(rnagsva, design)
+  design <- model.matrix(~factor(pat2[!("middle"),gene2]))
+  fit <- lmFit(rnagsva_out, design)
   fit <- eBayes(fit)
   topTable(fit, coef=2, number=Inf, p.value=0.05, adjust="BH")
 }

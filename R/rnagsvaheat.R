@@ -18,18 +18,18 @@
 #' data(skcm)
 #' gene <- "SOX10"
 #' sox10.pat <- rnasubset(pat, rna, gene, 5)
-#' sox10.gsva <- rnagsva(sox10.deg, rna)
+#' sox10.gsva <- rnagsva(sox10.pat, rna)
 #' sox10.gsva.sig <- rnagsvasig(sox10.pat, sox10.gsva)
 #' rnagsvaheat(sox10.pat, sox10.gsva, sox10.gsva.sig, gene)
 #'
 #' @export
 #'
-rnagsvaheat <- function(pat2, rnagsva, rnagsvasig, gene) {
+rnagsvaheat <- function(pat2, rna_gsva, rna_gsvasig, gene) {
   setkey(pat2, gene2)
-  h1 <- rnagsva[match(rownames(rnagsvasig)[1:100], rownames(rnagsva)),]
+  h1 <- rna_gsva[match(rownames(rna_gsvasig)[1:100], rownames(rna_gsva)),]
   h1.t <- t(apply(h1, 1, scale))
   colnames(h1.t) <- colnames(h1)
-  df <- data.frame(as.character(pat2[!("middle"),gene2]))
+  df <- data.frame(as.character(pat2[!("middle"),gene2]), stringsAsFactors = FALSE)
   colnames(df) <- gene
   cellcol <- c("#ca0020", "#0571b0")
   names(cellcol) <- c(levels(pat2$gene2)[1], levels(pat2$gene2)[2])

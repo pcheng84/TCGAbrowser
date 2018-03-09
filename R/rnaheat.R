@@ -34,7 +34,7 @@ rnaheat <- function(pat2, rna, deg, gene) {
   colnames(h1.t) <- colnames(h1)
   setkey(rna, Gene)
   df <- data.frame(as.character(pat2[!("middle"),gene2]),
-                   pat2[!("middle"), exprs_rank])
+                   pat2[!("middle"), exprs_rank], stringsAsFactors = FALSE)
   colnames(df) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
   cellcol <- c("#ca0020", "#0571b0")
   names(cellcol) <- c(levels(pat2$gene2)[1], levels(pat2$gene2)[2])
