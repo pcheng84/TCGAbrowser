@@ -22,7 +22,7 @@
 rnagsvasig <- function(pat2, rnagsva) {
   setkey(pat2, gene2)
   design <- model.matrix(~factor(pat2[!("middle"),gene2], levels=c(levels(pat2$gene2)[2], levels(pat2$gene2)[1])))
-  fit <- lmFit(rnagsva$es.obs, design)
+  fit <- lmFit(rnagsva, design)
   fit <- eBayes(fit)
   topTable(fit, coef=2, number=Inf, p.value=0.05, adjust="BH")
 }

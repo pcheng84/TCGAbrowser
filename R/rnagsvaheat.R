@@ -26,7 +26,7 @@
 #'
 rnagsvaheat <- function(pat2, rnagsva, rnagsvasig, gene) {
   setkey(pat2, gene2)
-  h1 <- rnagsva$es.obs[match(rownames(rnagsvasig)[1:100], rownames(rnagsva$es.obs)),]
+  h1 <- rnagsva[match(rownames(rnagsvasig)[1:100], rownames(rnagsva)),]
   h1.t <- t(apply(h1, 1, scale))
   colnames(h1.t) <- colnames(h1)
   df <- data.frame(as.character(pat2[!("middle"),gene2]))
