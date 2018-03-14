@@ -22,6 +22,7 @@
 #' @export
 #'
 rnagsva <- function(pat2, rna) {
+  suppressPackageStartupMessages(require(GSVAdata))
   data(c2BroadSets)
   setkey(pat2, gene2)
   d1.gsva <- as.matrix(rna[,pat2[!("middle"), name], with=F])

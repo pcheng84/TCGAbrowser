@@ -1,7 +1,7 @@
 Package: TCGAbrowser
 Type: Package
 Title: Explores and Analyzses TCGA Data
-Version: 0.1.0
+Version: 0.1.2
 Authors@R: person("Phil", "Cheng", email = "phil.cheng@usz.ch", role = c("aut", "cre"))
 Description: Survival and Differential expression analysis of TCGA Data
     Integrative analysis of mutation, copy number and clinical characteristics based
@@ -9,8 +9,8 @@ Description: Survival and Differential expression analysis of TCGA Data
 Imports: data.table, 
     ComplexHeatmap, 
     DOSE, 
-    GSVA, 
-    GSVAdata, 
+    GSVA (>= 1.26), 
+    GSVAdata (>= 1.14), 
     ReactomePA, 
     circlize,
     dplyr,
