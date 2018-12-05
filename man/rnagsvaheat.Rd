@@ -25,7 +25,7 @@ Uses ComplexHeatmap to draw heatmap for GSVA analysis
 data(skcm)
 gene <- "SOX10"
 sox10.pat <- rnasubset(pat, rna, gene, 5)
-sox10.gsva <- rnagsva(sox10.deg, rna)
+sox10.gsva <- rnagsva(sox10.pat, rna)
 sox10.gsva.sig <- rnagsvasig(sox10.pat, sox10.gsva)
 rnagsvaheat(sox10.pat, sox10.gsva, sox10.gsva.sig, gene)
 

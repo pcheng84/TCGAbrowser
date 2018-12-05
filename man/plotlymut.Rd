@@ -24,7 +24,7 @@ Draws plotly plot of mutations
 \examples{
 data(skcm)
 gene <- "SOX10"
-sox10 <- rnasubset(pat, rna, gene, 10)
+sox10.pat <- rnasubset(pat, rna, gene, 10)
 sox10.mut <- diffmut(sox10.pat, mut)
 plotlymut(sox10.pat, mut, sox10.mut, gene)
 
