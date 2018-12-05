@@ -13,7 +13,7 @@
 #' data(skcm)
 #' gene <- "SOX10"
 #' sox10.pat <- rnasubset(pat, rna, gene, 10)
-#' hchartgenelevel(sox10.pat)
+#' plotlygenelevel(sox10.pat)
 #'
 #' @export
 #'
