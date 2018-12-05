@@ -5,7 +5,7 @@ Version: 0.1.2
 Authors@R: person("Phil", "Cheng", email = "phil.cheng@usz.ch", role = c("aut", "cre"))
 Description: Survival and Differential expression analysis of TCGA Data
     Integrative analysis of mutation, copy number and clinical characteristics based
-    on RNAseq
+    on subsetting the patients according to gene expression, mutation or copynumber
 Imports: data.table, 
     ComplexHeatmap, 
     DOSE, 
