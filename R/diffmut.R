@@ -19,6 +19,7 @@
 #'
 
 diffmut <- function(pat2, mut) {
+  # replace pat2 with MAE object, but what's mut?
   setkey(pat2, gene2)
   #gets patients with rnaseq, clinical and mutation data
   overlap.high <- intersect(pat2[levels(pat2$gene2)[1], bcr_patient_barcode], colnames(mut))

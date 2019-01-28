@@ -18,6 +18,7 @@
 #' @export
 rnasubset <- function(pat, rna, gene, percent) {
   #retrieves patients with RNAseq data
+  # replace pat, rna with MAE object, return MAE with new "high / low" column in coldata
   pat.rna <- rna[, c("Gene", colnames(rna)[colnames(rna) %in% pat$name]), with=F]
   setkey(pat.rna, Gene)
   high <- round((ncol(pat.rna) - 1) - percent/100 * (ncol(pat.rna)-1), digits=0 )

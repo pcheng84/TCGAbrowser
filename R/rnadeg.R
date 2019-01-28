@@ -20,6 +20,7 @@
 #' @export
 #'
 rnadeg <- function(pat2, rna) {
+  #replace pat2 with MES object, still returns topTable
   setkey(pat2, gene2)
   deg <- DGEList(counts=rna[,pat2[!("middle"), name], with=F], genes=rna$Gene, group=pat2[!("middle"),gene2])
   isexpr <- rowSums(cpm(deg)>1) >= (ncol(deg)/2) #only keeps genes with at least 1 count-per-million in at least half the samples

@@ -24,6 +24,8 @@
 #' @export
 #'
 rnaheat <- function(pat2, rna, deg, gene) {
+  # replace pat2, rna with MAE object. 
+  # add option to choose how many to graph. 
   setkey(pat2, gene2)
   rna.log <- data.table(Gene = rna$Gene, cpm(rna[,pat2[!("middle"), name], with = FALSE], log = TRUE, normalized.lib.sizes = FALSE, prior.count = 8))
   setkey(rna.log, Gene)
