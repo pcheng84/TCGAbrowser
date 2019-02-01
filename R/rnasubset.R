@@ -8,8 +8,8 @@
 #' @return Returns a MultiAssayExperiment object with column in colData identifying high, middle and low expression for one gene.
 #'
 #' @examples
-#' data(skcm)
-#' rnasubset(pat, rna, "SOX10", 10)
+#' gbm <- curatedTCGAData("gbm", "RNASeq2GeneNorm", FALSE)
+#' rnasubset(gbm, "SOX10", 10)
 #'
 #' @export
 rnasubset <- function(mae, gene, percent) {
