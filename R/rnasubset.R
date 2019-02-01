@@ -1,38 +1,39 @@
 #' rnasubset function
 #'
-#' Adds gene expression column and gene level columns to patient table
+#' Subsets MultiAssayExperiment object to one gene of interest, and add expression level column to colData.
 #'
-#' @param pat data frame with patient data, each patient is one row
-#' @param rna data frame with RNAseq count values, genes in rows, patients in columns
-#' @param gene character(1) Gene symbol
+#' @param mae MultiAssayExperiment object containing data from curatedTCGAdata. Must include RNASeq2GeneNorm assay.
 #' @param percent numeric(1) percentile of patients to compare 1-50
 #'
-#' @import data.table
-#'
-#' @return Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups
+#' @return Returns a MultiAssayExperiment object with column in colData identifying high, middle and low expression for one gene.
 #'
 #' @examples
 #' data(skcm)
 #' rnasubset(pat, rna, "SOX10", 10)
 #'
 #' @export
-rnasubset <- function(pat, rna, gene, percent) {
-  #retrieves patients with RNAseq data
-  # replace pat, rna with MAE object, return MAE with new "high / low" column in coldata
-  pat.rna <- rna[, c("Gene", colnames(rna)[colnames(rna) %in% pat$name]), with=F]
-  setkey(pat.rna, Gene)
-  high <- round((ncol(pat.rna) - 1) - percent/100 * (ncol(pat.rna)-1), digits=0 )
-  low <- round((ncol(pat.rna) - 1) * percent/100, digits=0)
+rnasubset <- function(mae, gene, percent) {
 
-  #selecting row for gene and only retrieving values
-  pat.rna.gene <- melt.data.table(pat.rna[gene, setdiff(colnames(pat.rna), "Gene"), with=F], id.vars = NULL, measure.vars = colnames(pat.rna)[-1], variable.name = "name", value.name="level")
-  setkey(pat.rna.gene, level)
-  pat.rna.gene$exprs_rank <- 1:nrow(pat.rna.gene)
-  #pat.rna.gene[, name := factor(name, levels=unique(name))]
-  #pat.rna.gene[, ':=' (high = level > level[eval(high)], low = level <= level[eval(low)])]
-  #pat.rna.gene[, high := level > level[eval(high)]]
-  #pat.rna.gene[, low := level <= level[eval(low)]]
-  pat.rna.gene[, `:=` (gene2 = factor(c(rep("low", times = eval(low)), rep("middle", times = eval(high - low)), rep("high", times = eval(ncol(pat.rna) - 1 - high)))))]
-  phenosgene <- merge(pat, pat.rna.gene, by= "name")
-  phenosgene
+  #Find which assay contains RNA data (assay names have suffixes and prefixes for each cancer)
+  #To do: test whether this is really a MAE object, and whether it has the appropriate assay.
+  assay_num <- grep("RNASeq2GeneNorm", names(mae))
+
+  #Extract RNASeq data for desired gene, but keep it in MAE format. This will be edited and returned.
+  #To do: make sure that gene is a single character object (fail and exit if given multiple genes)
+  pat.mae <- mae[gene, , assay_num]
+
+  #Get RNA data as a matrix for calculations
+  #To do: make sure that at least 3 RNA values are given.
+  rna.mat <- assay(pat.mae)
+
+  #Find RNA expression values corresponding to top and bottom percentile
+  percents <- quantile(rna.mat, c(percent / 100, (1 - percent / 100)))
+
+  #Mark samples with low, medium, and high values (in pat.mae colData) based on above percentiles
+  pat.mae$level <- "middle"
+  pat.mae$level[rna.mat <= percents[1]] <- "low"
+  pat.mae$level[rna.mat >= percents[2]] <- "high"
+
+  #return MAE object, now subsetted to gene of interest, with new colData column indicating expression level
+  pat.mae
 }
