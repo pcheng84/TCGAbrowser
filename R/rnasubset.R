@@ -22,9 +22,8 @@ rnasubset <- function(mae, gene, percent) {
   #To do: make sure that gene is a single character object (fail and exit if given multiple genes)
   pat.mae <- mae[gene, , assay_num]
 
-  #Merge replicates (now taking minimum, could be mean or maximum), and ensure that all samples in assay are present in colData
+  #Ensure that all samples in assay are present in colData
   pat.mae <- intersectColumns(pat.mae)
-  pat.mae <- mergeReplicates(pat.mae, simplify = min)
 
   #Get RNA data as a data.frame for calculations
   #To do: make sure that at least 3 RNA values are given.
@@ -33,17 +32,16 @@ rnasubset <- function(mae, gene, percent) {
   #Find RNA expression values corresponding to top and bottom percentile
   percents <- quantile(rna.mat$value, c(percent / 100, (1 - (percent / 100))))
 
-  #Find which samples have low and high values based on above percentiles
-  low.samps <- rna.mat$primary[rna.mat$value <= percents[1]]
-  high.samps <- rna.mat$primary[rna.mat$value >= percents[2]]
-  med.samps <- rna.mat$primary[rna.mat$value > percents[1] & rna.mat$value < percents[2]]
+  #Mark which samples have high / med / low expression, save as matrix
+  level <- matrix(nrow = 1, ncol = nrow(rna.mat), dimnames = list("level", rna.mat$colname))
+  level[rna.mat$value <= percents[1]] <- "low"
+  level[rna.mat$value >= percents[2]] <- "high"
+  level[rna.mat$value > percents[1] & rna.mat$value < percents[2]] <- "medium"
 
-  #Mark low, medium, and high expression values in original MAE colData. Mark samples NA if they have no RNA data.
-  mae$level <- NA
-  mae$level[mae$patientID %in% med.samps] <- "medium"
-  mae$level[mae$patientID %in% low.samps] <- "low"
-  mae$level[mae$patientID %in% high.samps] <- "high"
+  #Append expression level matrix to original MAE object
+  mae <- c(mae, new_var = level, mapFrom = 1L)
+  names(mae)[names(mae) == "new_var"] <- paste0(gene, "_ExpressionLevel")
 
-  #return MAE object with new colData column indicating expression level
+  #return MAE object with new assay indicating expression level
   mae
 }
