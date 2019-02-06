@@ -6,6 +6,7 @@
 #' @param rna data frame of RNAseq values
 #' @param deg data frame of differential expressed genes from rnadeg function
 #' @param gene character(1) Gene symbol of gene of interest
+#' @param n numeric(1) Number of genes you want to plot, default is all significant genes
 #'
 #' @import data.table
 #' @import ComplexHeatmap
@@ -19,15 +20,16 @@
 #' gene <- "SOX10"
 #' sox10.pat <- rnasubset(pat, rna, gene, 50)
 #' sox10.deg <- rnadeg(sox10.pat, rna)
-#' rnaheat(sox10.pat, rna, sox10.deg, gene)
+#' rnaheat(sox10.pat, rna, sox10.deg, gene, n)
 #'
 #' @export
 #'
-rnaheat <- function(pat2, rna, deg, gene) {
+rnaheat <- function(pat2, rna, deg, gene, n = NULL) {
+  if (is.null(n)) n <- nrow(deg) else n
   setkey(pat2, gene2)
   rna.log <- data.table(Gene = rna$Gene, cpm(rna[,pat2[!("middle"), name], with = FALSE], log = TRUE, normalized.lib.sizes = FALSE, prior.count = 8))
   setkey(rna.log, Gene)
-  dgenes <- deg$genes[1:100][!is.na(deg$genes[1:100])]
+  dgenes <- deg$genes[1:n][!is.na(deg$genes[1:n])]
   h1 <- as.matrix(rna.log[dgenes, colnames(rna.log)[-1], with = FALSE])
   rownames(h1) <- dgenes
   h1.t <- t(apply(h1, 1, scale))
