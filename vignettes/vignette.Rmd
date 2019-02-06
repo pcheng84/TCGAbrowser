@@ -149,14 +149,14 @@ genesurv(sox10.rna, "SOX10")
 ```
 
 ##Differential gene expression analysis
-`rnadeg` needs 2 parameters: the output table from `rnasubset` and the RNAseq count table. `rnadeg` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups.
+`rnadeg` needs 2 parameters: the output table from `rnasubset` and the RNAseq count table. `rnadeg` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups. The low group is the base group for comparison, so your gene of interest should have a positive log fold change.
 
 ```{r}
 sox10.deg <- rnadeg(sox10.rna, rna)
 head(sox10.deg)
 ```
 
-`rnaheat` needs 4 parameters: the output table from `rnasubset`, the RNAseq count table, the output table from `rnadeg`, and the gene name. `rnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of the top 100 most significant differentially expressed genes, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
+`rnaheat` needs 5 parameters: the output table from `rnasubset`, the RNAseq count table, the output table from `rnadeg`, the gene name, and the number of genes to plot. `rnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of all the significant differentially expressed genes unless specified with `n`, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
 
 ```{r}
 rnaheat(sox10.rna, rna, sox10.deg, "SOX10")
