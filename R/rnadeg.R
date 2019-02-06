@@ -24,7 +24,7 @@ rnadeg <- function(pat2, rna) {
   deg <- DGEList(counts=rna[,pat2[!("middle"), name], with=F], genes=rna$Gene, group=pat2[!("middle"),gene2])
   isexpr <- rowSums(cpm(deg)>1) >= (ncol(deg)/2) #only keeps genes with at least 1 count-per-million in at least half the samples
   deg <- deg[isexpr,]
-  design <- model.matrix(~factor(pat2[!("middle"),gene2]))
+  design <- model.matrix(~factor(pat2[!("middle"),gene2], levels = c("low", "high")))
   v2 <- voom(deg, design, plot=F)
   fit <- lmFit(v2, design)
   fit2 <- eBayes(fit)
