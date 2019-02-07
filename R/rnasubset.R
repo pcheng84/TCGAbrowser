@@ -39,8 +39,8 @@ rnasubset <- function(mae, gene, percent) {
   level[rna.mat$value > percents[1] & rna.mat$value < percents[2]] <- "medium"
 
   #Append expression level matrix to original MAE object
-  mae <- c(mae, new_var = level, mapFrom = 1L)
-  names(mae)[names(mae) == "new_var"] <- paste0(gene, "_ExpressionLevel")
+  mae <- c(mae, ExpressionLevel = level, mapFrom = 1L)
+
 
   #return MAE object with new assay indicating expression level
   mae
