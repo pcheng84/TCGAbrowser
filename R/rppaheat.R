@@ -27,14 +27,14 @@ rppaheat <- function(mae, gene) {
   rna_assay <- grep("RNASeq2GeneNorm", names(mae))
 
   #Get names of samples with high and low expression, convert them to common format
-  high <- TCGAbarcode(colnames(mae[[exp_assay]])[mae[[exp_assay]] == "high"])
-  low  <- TCGAbarcode(colnames(mae[[exp_assay]])[mae[[exp_assay]] == "low"])
+  high <- TCGAbarcode(colnames(mae[[exp_assay]])[mae[[exp_assay]] == "high"], sample = T)
+  low  <- TCGAbarcode(colnames(mae[[exp_assay]])[mae[[exp_assay]] == "low"], sample = T)
 
   #Find the patients in RPPA assay corresponding to above
-  overlap_high <- TCGAbarcode(colnames(mae[[rppa_assay]])) %in% high
+  overlap_high <- TCGAbarcode(colnames(mae[[rppa_assay]]), sample = T) %in% high
   overlap_high <- colnames(mae[[rppa_assay]])[overlap_high]
 
-  overlap_low <- TCGAbarcode(colnames(mae[[rppa_assay]])) %in% low
+  overlap_low <- TCGAbarcode(colnames(mae[[rppa_assay]]), sample = T) %in% low
   overlap_low <- colnames(mae[[rppa_assay]])[overlap_low]
   all_overlaps <- c(overlap_high, overlap_low)
 
@@ -45,11 +45,18 @@ rppaheat <- function(mae, gene) {
   counts <- counts[complete.cases(counts), ]
   colnames(counts) <- TCGAbarcode(colnames(counts))
 
+  #Extract RNA data for high/low expression. Pretty much just for the heatmap annotation.
+  rna_overlap_high <- TCGAbarcode(colnames(mae[[exp_assay]]), sample = T) %in% TCGAbarcode(overlap_high, sample = T)
+  rna_overlap_high <- colnames(mae[[exp_assay]])[rna_overlap_high]
+  rna_overlap_low <- TCGAbarcode(colnames(mae[[exp_assay]]), sample = T) %in% TCGAbarcode(overlap_low, sample = T)
+  rna_overlap_low <- colnames(mae[[exp_assay]])[rna_overlap_low]
+
+
   #Make heatmap annotation data frame, 2 columns, first is high/low, second is gene expression
   df <- data.frame(c(rep("high", times = length(overlap_high)),
                      rep("low" , times = length(overlap_low))),
-                   c(assay(mae[gene, TCGAbarcode(overlap_high), rna_assay]),
-                     assay(mae[gene, TCGAbarcode(overlap_low ), rna_assay])))
+                   c(assay(mae[gene, TCGAbarcode(rna_overlap_high), rna_assay]),
+                     assay(mae[gene, TCGAbarcode(rna_overlap_low ), rna_assay])))
   colnames(df) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
 
   #make colors, name them high/low
