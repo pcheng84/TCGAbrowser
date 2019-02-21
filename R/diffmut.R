@@ -5,7 +5,7 @@
 #' @param mae MultiAssayExperiment object. Must contain assays Mutation (from curatedTCGA) and ExpressionLevel (from function rnasubset())
 #'
 #' @import data.table
-#' @import TCGAUtils
+#' @importFrom TCGAUtils TCGAbarcode
 #' @return data frame with frequency of mutation in high and low group with p-value from Chi-squared test
 #'
 #' @examples
