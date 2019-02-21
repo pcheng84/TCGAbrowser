@@ -67,6 +67,7 @@ diffmut <- function(mae) {
   #creates matrix with 4 rows
   xx = with(m2, matrix(c(N.hightotal - N.high, N.high, N.lowtotal - N.low, N.low), 4, byrow = TRUE))
 
+  #Performs Chi-sq tests for each gene, adjusts p-value, returns data frame
   m2[, p.value := apply(xx, 2, function(x) {
     oopts <- options(warn = -1)
     on.exit(oopts)
