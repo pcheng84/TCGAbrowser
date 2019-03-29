@@ -33,7 +33,8 @@ rnaheat <- function(mae, deg, gene, n = 100) {
   stopifnot(any(grepl("Cohort", names(mae))))
 
   rna_assay_num <- grep("RNASeq", names(mae))
-  lvl <- mae[[level_assay_num]]
+  cohort_assay_num <- grep("Cohort", names(mae))
+  lvl <- mae[[cohort_assay_num]]
   good_levels <- names(lvl[1, lvl[1,] != "medium"])
 
   rna <- assay(mae[[rna_assay_num]])
