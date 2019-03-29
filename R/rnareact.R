@@ -5,7 +5,7 @@
 #' @param rnadeg data frame generated from rnadeg
 #'
 #' @import gage
-#' @import ReactomePA
+#' @importFrom ReactomePA enrichPathway
 #' @import DOSE
 #'
 #' @return data frame of enrichment for Reactome gene sets

@@ -19,7 +19,7 @@ The motivation for TCGAbrowser was to provide convenience functions and wrappers
 To install TCGAbrowser use the code below.
 ```{r, message = FALSE, warning = FALSE}
 require(devtools)
-devtools::install_github("pcheng84/TCGAbrowser")
+devtools::install_github("pcheng84/TCGAbrowser", ref = "multiAssayExperiment")
 require(TCGAbrowser)
 ```
 
@@ -91,14 +91,14 @@ genesurv(lusc_egfr, "EGFR")
 `rnadeg` needs 2 parameters: the output multiassayexperiment object from `rnasubset`. `rnadeg` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups.
 
 ```{r}
-egfr_deg <- rnadeg(lusc_t.egfr)
+egfr_deg <- rnadeg(lusc_egfr)
 head(egfr_deg)
 ```
 
 `rnaheat` needs 4 parameters: the output multiassayexperiment object from `rnasubset`, the output data.frame from `rnadeg`, the gene name, and the number of genes to plot for the heatmap. `rnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of the top 100 most significant differentially expressed genes, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
 
 ```{r}
-rnaheat(lusc_t.egfr, egfr_deg, "EGFR", 100)
+rnaheat(lusc_egfr, egfr_deg, "EGFR", 100)
 ```
 
 ##Reactome pathway analysis

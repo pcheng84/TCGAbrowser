@@ -9,10 +9,24 @@
 #' @return data frame with frequency of mutation in high and low group with p-value from Chi-squared test
 #'
 #' @examples
-#' mae <- curatedTCGAData("SKCM", c("RNASeq2GeneNorm", "Mutation", "GISTIC", "RPPAArray") , FALSE)
-#' gene <- "SOX10"
-#' sox10 <- rnasubset(mae, gene, 10)
-#' diffmut(sox10)
+#' library(curatedTCGAData)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+#' genome(lusc[[2]])
+#' genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
+#'
+#' seqlevelsStyle(lusc[[2]]) <- "NCBI"
+#' genome(lusc[[2]])
+#'
+#' lusc2 <- qreduceTCGA(lusc)
+#'
+#' #remove normal samples and just focus on primaries
+#' tnmae <- splitAssays(lusc2, c("01", "11"))
+#'
+#' lusc.t <- tnmae[, , grep("^01", names(tnmae))]
+#' #split tumor and normal samples
+#' lusc_tn <- splitAssays(lusc2, c("01", "11"))
+#' #remake MultiAssayExperiment with only primary tumor samples
+#' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #'
 #' @export
 #'
