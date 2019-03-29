@@ -1,0 +1,121 @@
+---
+title: "TCGAbrowser workflow"
+author: "Phil Cheng"
+date: "`r doc_date()`"
+package: "`r pkg_ver('TCGAbrowser')`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{TCGAbrowser workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+The Cancer Genome Atlas has provided a comprehensive omics study of 33 cancers. The National Cancer Institute (NCI) has made this data pubically available on the Genomic Data Commons [(GDC)](https://gdc-portal.nci.nih.gov/) Data Portal. There are several R packages that download the data, `r Biocpkg("RTCGAToolbox")`, `r Biocpkg("RTCGA")`, `r Biocpkg("TCGAbiolinks")`, `r CRANpkg("TCGA2STAT")`, `r Biocpkg("MultiAssayExperiment")`, and [TCGA-Assembler](http://www.compgenome.org/TCGA-Assembler/).
+
+The motivation for TCGAbrowser was to provide convenience functions and wrappers to analyze the omics datasets by gene expression or mutation subsetting. Typically, biologists are studying one gene in one cancer by overexpression and/or knockdown experiments. TCGAbrowser was designed to subset the datasets by gene expression or gene mutation and perform differential gene expresion, mutation, copy number, protein and survival analysis. 
+
+# Installation
+To install TCGAbrowser use the code below.
+```{r, message = FALSE, warning = FALSE}
+require(devtools)
+devtools::install_github("pcheng84/TCGAbrowser")
+require(TCGAbrowser)
+```
+
+The workflow for TCGAbrowser is shown in the graphic below.
+
+```{r, out.width = "50%", echo = FALSE}
+knitr::include_graphics("workflow.png")
+```
+
+TCGAbrowser functions were designed either to subset the data, perform statistical analysis or for plotting. 
+
+Subset functions include `rnasubset` and `mutsubset` which that subset the data based on RNA expression and mutation status respectively. 
+
+Analysis functions include: `diffmut` for differential mutation analysis; `diffcp` for differential copy number analysis; `rnadeg` for differential RNA expression analysis; `rnagsva` and `rnagsvasig` for differential GSVA analysis; `rnareact` for reactome pathway analysis on the differential RNA expression analysis; `rppadeg` for differential RPPA analysis. 
+
+Plotting functions include: `genesurv` for Kaplan-Meier survival plots; `plotlymut` for an Oncoprint-like plot of mutation data; `plotlycp` for an Oncoprint-like plot of copy number data; `rnaheat` for a heatmap of differential expressed genes; `rnagsvaheat` for a heatmap of differential expressed pathways; `plotreact` for Reactome dotplots, enrichment plots and cnetmap plots; `rppaheat` for a heatmap of differential expressed proteins.
+
+
+#Data download and formating
+This vignette assumes the user will use one of the R packages mentioned above to download the TCGA data. In this example, we used `r Biocpkg("curatedTCGAData")` to download the data. We will transform the mutation data into a binary matrix with `qreduceTCGA` from `r Biocpkg("TCGAutils")` and subset the data for just tumor samples using `splitAssays`. 
+
+```{r, message = FALSE, warning = FALSE}
+library(curatedTCGAData)
+library(TCGAutils)
+
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+genome(lusc[[2]])
+genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
+
+seqlevelsStyle(lusc[[2]]) <- "NCBI"
+genome(lusc[[2]])
+
+lusc2 <- qreduceTCGA(lusc)
+
+#remove normal samples and just focus on primaries
+tnmae <- splitAssays(lusc2, c("01", "11"))
+
+lusc_t <- tnmae[, , grep("^01", names(tnmae))]
+
+```
+
+#Subset by gene expression workflow
+`rnasubset` needs 3 parameters: the multiassayexperiment, a gene and a percentage cutoff. This function will intersect the TCGA patient barcode with the sample barcodes from RNAseq. 
+
+`rnasubset` will return a multiassayexperiment object with an assay called "Cohort". The "Cohort" assay contains all samples from the RNAseq dataset and has 3 rows, the first row identifies if the sample belongs in the "low", "middle", or "high" gene expression category, the second row is the rank of gene across all samples, and the third row are the gene expression values themselves. 
+
+In this example, we will compare patients in the top 10% of EGFR expression and to the bottom 10% of EGFR expression.
+
+```{r}
+lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
+```
+
+##Expression plotting
+The output table from `rnasubset` can be used for downstream analysis and plotting functions. `plotlygenelevel` and `hchartgenelevel` are wrappers for `plot_ly` from `r CRANpkg("plotly")` and `hchart` from `r CRANpkg("highcharter")` respectively. These two functions will plot the gene expression of your gene of interest across all samples with coloring for the low, middle and high groups. 
+
+```{r}
+plotlygenelevel(lusc_egfr)
+
+```
+
+##Survival Analysis
+`genesurv` needs 2 parameters: the output multiassayexperiment object from `rnasubset` and the gene name. `genesurv` is a wrapper for `ggsurvplot` from `r CRANpkg("survminer")`. It will plot the Kaplan-Meier curves for the high gene and low gene expression groups and report the p value from the log-rank test.   
+
+```{r}
+genesurv(lusc_egfr, "EGFR")
+```
+
+##Differential gene expression analysis
+`rnadeg` needs 2 parameters: the output multiassayexperiment object from `rnasubset`. `rnadeg` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups.
+
+```{r}
+egfr_deg <- rnadeg(lusc_t.egfr)
+head(egfr_deg)
+```
+
+`rnaheat` needs 4 parameters: the output multiassayexperiment object from `rnasubset`, the output data.frame from `rnadeg`, the gene name, and the number of genes to plot for the heatmap. `rnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of the top 100 most significant differentially expressed genes, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
+
+```{r}
+rnaheat(lusc_t.egfr, egfr_deg, "EGFR", 100)
+```
+
+##Reactome pathway analysis
+`rnareact` needs 1 parameter: the output table from `rnasubset`. `rnareact` is wrapper for `enrichPathway` from `r Biocpkg("ReactomePA")`. It will calculate enriched pathways from Reactome database. 
+
+`plotreact` needs 4 parameters: the output table from `rnareact`, the output table from `rnadeg`, the graph selection which can be 'dot', 'map', or 'cnet', and the number of pathways for plotting. `plotreact` is a wrapper for `dotplot`, `enrichMap`, and `cnetplot` from `r Biocpkg("ReactomePA")`. 
+
+```{r}
+egfr_react <- rnareact(egfr_deg)
+
+#dotplot
+plotreact(egfr_react, egfr_deg, "dot", 15)
+
+#pathway plot
+plotreact(egfr_react, egfr_deg, "map", 15)
+
+#cnet plot
+plotreact(egfr_react, egfr_deg, "cnet", 5)
+```
+

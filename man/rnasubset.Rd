@@ -2,16 +2,14 @@
 % Please edit documentation in R/patsubset.R, R/rnasubset.R
 \name{rnasubset}
 \alias{rnasubset}
-\title{rnasubset function}
+\title{patsubset function}
 \usage{
-rnasubset(pat, rna, gene, percent)
+rnasubset(mae, gene, percent)
 
-rnasubset(pat, rna, gene, percent)
+rnasubset(mae, gene, percent)
 }
 \arguments{
-\item{pat}{data frame with patient data, each patient is one row}
-
-\item{rna}{data frame with RNAseq count values, genes in rows, patients in columns}
+\item{mae}{MultiAssayExperiment object containing RNAseq data, must have assay with "RNAseq" in the name}
 
 \item{gene}{character(1) Gene symbol}
 
@@ -21,25 +19,32 @@ rnasubset(pat, rna, gene, percent)
 
 \item{rna}{data frame with RNAseq count values, genes in rows, patients in columns}
 
-\item{gene}{character(1) Gene symbol}
+\item{gene}{character(1) A gene to subset the RNAseq data}
 
 \item{percent}{numeric(1) percentile of patients to compare 1-50}
 }
 \value{
 Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups
 
-Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups
+Returns a MultiAssayExperiment object with an assay called Cohort that labels the samples according to "high", "middle" and "low" expression for the gene of interest
 }
 \description{
 Adds gene expression column and gene level columns to patient table
 
-Adds gene expression column and gene level columns to patient table
+Annotates MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
 }
 \examples{
 data(skcm)
 rnasubset(pat, rna, "SOX10", 10)
 
-data(skcm)
-rnasubset(pat, rna, "SOX10", 10)
+library(curatedTCGAData)
+library(TCGAutils)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+
+#split tumor and normal samples
+lusc_tn <- splitAssays(lusc, c("01", "11"))
+#remake MultiAssayExperiment with only primary tumor samples
+lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
+lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 
 }

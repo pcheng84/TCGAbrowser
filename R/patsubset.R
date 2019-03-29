@@ -1,4 +1,4 @@
-#' rnasubset function
+#' patsubset function
 #'
 #' Adds gene expression column and gene level columns to patient table
 #'
