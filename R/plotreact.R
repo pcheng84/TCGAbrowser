@@ -35,6 +35,6 @@
 plotreact <- function(react, deg, graph, n = 10) {
   switch(graph,
          "dot" = dotplot(react, showCategory=n),
-         "map" = emapplot(react, n=n, layout=igraph::layout.kamada.kawai, vertex.label.cex = 1),
+         "map" = emapplot(react, n=n, vertex.label.cex = 1),
          "cnet" = cnetplot(react, showCategory = n, categorySize="pvalue", foldChange=deg$logFC))
 }
