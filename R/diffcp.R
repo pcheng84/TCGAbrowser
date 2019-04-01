@@ -53,8 +53,8 @@ diffcp <- function(mae) {
   lvl.high <- lvl3[lvl3$Level == "high", grep("GISTIC", colnames(lvl3))]
   lvl.low <- lvl3[lvl3$Level == "low", grep("GISTIC", colnames(lvl3))]
 
-  cp <- data.table(Gene = rownames(assay(lusc.tc[[grep("GISTIC", names(lusc.tc))]])),
-                   assay(lusc.tc[[grep("GISTIC", names(lusc.tc))]]))
+  cp <- data.table(Gene = rownames(assay(mae2[[1]])),
+                   assay(mae2[[1]]))
 
   cpmelt <- melt(cp, id.vars = "Gene", variable.name = "name")
   setkey(cpmelt, name)

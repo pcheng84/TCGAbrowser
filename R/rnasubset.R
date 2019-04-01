@@ -1,6 +1,6 @@
 #' rnasubset function
 #'
-#' Annotates MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
+#' Adds an assay called Cohort to a MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
 #'
 #' @param mae MultiAssayExperiment object containing RNAseq data, must have assay with "RNAseq" in the name
 #' @param gene character(1) A gene to subset the RNAseq data
