@@ -28,8 +28,6 @@
 #'
 rnareact <- function(deg) {
   data(lookup)
-  limma.fc <- deg$logFC
-  names(limma.fc) <- lookup$entrez[match(deg$genes, lookup$gene)]
   limma.names <- lookup$entrez[match(deg$genes, lookup$gene)]
   x <- enrichPathway(gene = limma.names, pvalueCutoff=1, readable=T)
 }

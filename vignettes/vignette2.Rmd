@@ -46,12 +46,12 @@ library(curatedTCGAData)
 library(TCGAutils)
 
 lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
-genome(lusc[[2]])
+
+#convert genome to hg19 format
 genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
-
 seqlevelsStyle(lusc[[2]]) <- "NCBI"
-genome(lusc[[2]])
 
+#convert mutation into binary matrix
 lusc2 <- qreduceTCGA(lusc)
 
 #remove normal samples and just focus on primaries
@@ -119,3 +119,56 @@ plotreact(egfr_react, egfr_deg, "map", 15)
 plotreact(egfr_react, egfr_deg, "cnet", 5)
 ```
 
+##Differential mutation
+`diffmut` needs a MultiAssayExperiment object from `rnasubset` or `mutsubset`. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will perform a chi-squared test for the proportions of mutated and wild-type genes between the high gene and low gene expression groups from `rnasubset` or mutated and wild-type groups from `mutsubset`. Since we use a binary matrix as a representation of mutation, we assume is any mutation in a gene would have the same effect. 
+
+`plotlymut` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffmut`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the differentially mutated genes and your gene of interest.
+
+```{r}
+egfr_dm <- diffmut(lusc_egfr)
+plotlymut(lusc_egfr, egfr_dm, "EGFR", 20)
+```
+
+##Differential copy number analysis
+`diffcp` needs a MultiAssayExperiment object from `rnasubset` or `mutsubset`. The MultiAssayExperiment should contain a GISTIC assay where the copy number values are represented by -2, -1, 0, 1, and 2. It will perform a chi-squared test between copy number gain and copy number neutral and another chi-squared test for copy number neutral and copy number loss. 
+
+`plotlycp` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffcp`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the copy number differences and your gene of interest.
+
+```{r}
+egfr_dcp <- diffcp(lusc_egfr)
+plotlycp(lusc_egfr, egfr_dcp, "EGFR", 20)
+```
+
+#Creating Multiassayexperiment from TCGAbiolinks
+```{r eval = FALSE, echo = TRUE}
+library(data.table)
+library(TCGAbiolinks)
+setwd("../")
+query <- GDCquery(project = "TCGA-SKCM",
+                  data.category = "Clinical",
+                  file.type = "xml")
+GDCdownload(query)
+skcm.clin <- GDCprepare_clinic(query, clinical.info = "patient")
+skcm.clin.f <- GDCprepare_clinic(query, clinical.info = "follow_up")
+setDT(skcm.clin.f)
+setDT(skcm.clin)
+skcm.clin[, days := ifelse(is.na(days_to_death), days_to_last_followup, days_to_death)]
+skcm.clin[, TCGA_days := days - days_to_submitted_specimen_dx]
+
+query1 <- GDCquery(project = "TCGA-SKCM",
+                  data.category = "Copy Number Variation",
+                  data.type = "Gene Level Copy Number Scores",
+                  access="open")
+GDCdownload(query1)
+skcm_gis <- GDCprepare(query1)
+setDT(skcm_gis)
+skcm_maf <- GDCquery_Maf("SKCM", pipelines = "mutect2")
+setDT(skcm_maf)
+skcm_rna <- GDCquery(project = "TCGA-SKCM",
+                     data.category = "Transcriptome Profiling",
+                     data.type = "Gene Expression Quantification",
+                     workflow.type = "HTSeq - Counts")
+
+GDCdownload(skcm_rna, method = "api", files.per.chunk = 20)
+skcm_rna2 <- GDCprepare(skcm_rna)
+```
