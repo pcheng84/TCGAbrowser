@@ -1,47 +1,56 @@
 #' rnasubset function
 #'
-#' Annotates MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
+#' Adds an assay called Cohort to a MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
 #'
-#' @param mae MultiAssayExperiment object containing data from curatedTCGAdata. Must include RNASeq2GeneNorm assay.
+#' @param mae MultiAssayExperiment object containing RNAseq data, must have assay with "RNAseq" in the name
+#' @param gene character(1) A gene to subset the RNAseq data
 #' @param percent numeric(1) percentile of patients to compare 1-50
 #'
-#' @return Returns a MultiAssayExperiment object with column in colData identifying high, middle and low expression for one gene.
+#' @import MultiAssayExperiment
+#'
+#' @return Returns a MultiAssayExperiment object with an assay called Cohort that labels the samples according to "high", "middle" and "low" expression for the gene of interest
 #'
 #' @examples
-#' gbm <- curatedTCGAData("gbm", "RNASeq2GeneNorm", FALSE)
-#' rnasubset(gbm, "SOX10", 10)
+#' library(curatedTCGAData)
+#' library(TCGAutils)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+#'
+#' #split tumor and normal samples
+#' lusc_tn <- splitAssays(lusc, c("01", "11"))
+#' #remake MultiAssayExperiment with only primary tumor samples
+#' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
+#' lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 #'
 #' @export
 rnasubset <- function(mae, gene, percent) {
 
+  #check if mae is MultiAssayExperiment
+  stopifnot(class(mae) == "MultiAssayExperiment")
+
   #Find which assay contains RNA data (assay names have suffixes and prefixes for each cancer)
-  #To do: test whether this is really a MAE object, and whether it has the appropriate assay.
   assay_num <- grep("RNASeq2GeneNorm", names(mae))
 
-  #Extract RNASeq data for desired gene, but keep it in MAE format.
-  #To do: make sure that gene is a single character object (fail and exit if given multiple genes)
-  pat.mae <- mae[gene, , assay_num]
-
-  #Ensure that all samples in assay are present in colData
-  pat.mae <- intersectColumns(pat.mae)
+  #check if gene exists in RNAseq dataset
+  stopifnot(toupper(gene) %in% rownames(mae[[assay_num]]))
 
   #Get RNA data as a data.frame for calculations
-  #To do: make sure that at least 3 RNA values are given.
-  rna.mat <- longFormat(pat.mae)
+  gene1 <- longFormat(mae[gene, , assay_num])
 
+  percent <- 10
   #Find RNA expression values corresponding to top and bottom percentile
-  percents <- quantile(rna.mat$value, c(percent / 100, (1 - (percent / 100))))
+  percents <- quantile(gene1$value, c(percent / 100, (1 - (percent / 100))))
 
   #Mark which samples have high / med / low expression, save as matrix
-  level <- matrix(nrow = 1, ncol = nrow(rna.mat), dimnames = list("level", rna.mat$colname))
-  level[rna.mat$value <= percents[1]] <- "low"
-  level[rna.mat$value >= percents[2]] <- "high"
-  level[rna.mat$value > percents[1] & rna.mat$value < percents[2]] <- "medium"
+  level <- matrix(nrow = 3, ncol = nrow(gene1), dimnames = list(c("level", "rank", "counts"), gene1$colname))
+  level["level", gene1$value <= percents[1]] <- "low"
+  level["level", gene1$value >= percents[2]] <- "high"
+  level["level", gene1$value > percents[1] & gene1$value < percents[2]] <- "medium"
+  level["rank",] <- as.numeric(rank(gene1$value))
+  level["counts", ] <- gene1$value
 
   #Append expression level matrix to original MAE object
-  mae <- c(mae, ExpressionLevel = level, mapFrom = 1L)
-
+  mae2 <- c(mae, Cohort = level, mapFrom = assay_num)
 
   #return MAE object with new assay indicating expression level
-  mae
+  mae2
 }

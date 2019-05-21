@@ -1,19 +1,24 @@
 #' mutsubset function
 #'
-#' Adds mutation column to patient table
+#' Adds an assay called Cohort to a MultiAssayExperiment object to indicate which samples are mutated or wild-type for a gene of interest.
 #'
-#' @param pat data frame with patient data, each patient is one row
-#' @param rna data frame with RNAseq count values, genes in rows, patients in columns
-#' @param mut data frame with binary mutation, one gene per row, one patient per column
-#' @param gene character(1) Gene symbol
+#' @param mae MultiAssayExperiment object containing a simplifed Mutation assay generated from `qreduceTCGA`, must have assay with "Mutation" in the name
+#' @param gene character(1) A gene to subset the mutation data
 #'
-#' @import data.table
+#' @import MultiAssayExperiment
 #'
-#' @return Returns a data frame with mutation of gene as WT or mut and gene expression
+#' @return Returns a MultiAssayExperiment object with an assay called Cohort that labels the samples according to "mutated" and "wild-type" for the gene of interest
 #'
 #' @examples
-#' data(skcm)
-#' mutsubset(pat, rna, mut, "SOX10")
+#' library(curatedTCGAData)
+#' library(TCGAutils)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+#'
+#' #split tumor and normal samples
+#' lusc_tn <- splitAssays(lusc, c("01", "11"))
+#' #remake MultiAssayExperiment with only primary tumor samples
+#' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
+#' lusc_egfr <- mutsubset(lusc_t, "EGFR")
 #'
 #' @export
 mutsubset <- function(pat, rna, mut, gene) {
