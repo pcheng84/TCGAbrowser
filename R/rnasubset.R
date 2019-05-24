@@ -36,7 +36,6 @@ rnasubset <- function(mae, gene, percent) {
   #Get RNA data as a data.frame for calculations
   gene1 <- longFormat(mae[gene, , assay_num])
 
-  percent <- 10
   #Find RNA expression values corresponding to top and bottom percentile
   percents <- quantile(gene1$value, c(percent / 100, (1 - (percent / 100))))
 
