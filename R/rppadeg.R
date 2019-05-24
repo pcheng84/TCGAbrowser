@@ -8,6 +8,7 @@
 #' @import data.table
 #' @import edgeR
 #' @import limma
+#' @importFrom TCGAutils TCGAbarcode
 #'
 #' @return data frame of significant differentially expressed proteins between the two groups defined in rnasubset or mutsubset
 #'
