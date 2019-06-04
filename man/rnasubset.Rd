@@ -31,7 +31,7 @@ Returns a MultiAssayExperiment object with an assay called Cohort that labels th
 \description{
 Adds gene expression column and gene level columns to patient table
 
-Annotates MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
+Adds an assay called Cohort to a MultiAssayExperiment object to indicate which samples have high, medium, or low expression of a gene of interest.
 }
 \examples{
 data(skcm)

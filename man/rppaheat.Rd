@@ -7,7 +7,7 @@
 rppaheat(mae, gene)
 }
 \arguments{
-\item{mae}{MultiAssayExperiment object. Must contain assays Mutation (from curatedTCGA) and ExpressionLevel (from function rnasubset())}
+\item{mae}{MultiAssayExperiment object. Must contain assays Mutation (from curatedTCGA) and Cohort (from function rnasubset())}
 
 \item{gene}{character(1) Gene symbol of gene of interest}
 }
@@ -18,8 +18,15 @@ ComplexHeatmap of top 100 significant differentially expressed genes
 Uses ComplexHeatmap to draw heatmap for RPPA data
 }
 \examples{
-mae <- curatedTCGAData("SKCM", c("RNASeq2GeneNorm", "Mutation", "GISTIC", "RPPAArray") , FALSE)
-gene <- "SOX10"
-sox10 <- rnasubset(mae, gene, 10)
-rppaheat(sox10, gene)
+#using data from the cureatedTCGAdata set
+library(curatedTCGAData)
+library(TCGAutils)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+
+#split tumor and normal samples
+lusc_tn <- splitAssays(lusc, c("01", "11"))
+#remake MultiAssayExperiment with only primary tumor samples
+lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
+lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
+rppaheat(lusc_t.egfr)
 }
