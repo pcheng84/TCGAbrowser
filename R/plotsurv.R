@@ -1,4 +1,4 @@
-#' genesurv function
+#' plotsurv function
 #'
 #' Draws survminer survival plot for high and low gene populations
 #'
@@ -19,7 +19,7 @@
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' genesurv(lusc_egfr, "EGFR")
+#' plotsurv(lusc_egfr, "EGFR")
 #'
 #' @export
 #'

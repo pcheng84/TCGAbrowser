@@ -1,4 +1,4 @@
-#' rnadeg function
+#' diffrna function
 #'
 #' Uses voom to find differentially expressed genes between the high and low groups
 #'
@@ -20,11 +20,11 @@
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' egfr_deg <- rnadeg(lusc_t.egfr)
+#' egfr_deg <- diffrna(lusc_t.egfr)
 #'
 #' @export
 #'
-rnadeg <- function(mae) {
+diffrna <- function(mae) {
   stopifnot(any(grepl("Cohort", names(mae))))
   #Get expression levels (which were appended by function rnasubset()), ID those with high / low expression
   level_assay_num <- grep("Cohort", names(mae))

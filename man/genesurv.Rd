@@ -19,7 +19,7 @@ Draws survminer survival plot for high and low gene populations
 }
 \examples{
 library(curatedTCGAData)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
 
 #split tumor and normal samples
 lusc_tn <- splitAssays(lusc2, c("01", "11"))

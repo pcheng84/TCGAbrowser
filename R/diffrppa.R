@@ -1,4 +1,4 @@
-#' rppadeg function
+#' diffrppa function
 #'
 #' Uses limma to find differentially expressed proteins between the high and low groups
 #'
@@ -23,7 +23,7 @@
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' egfr_deg <- rppadeg(lusc_t.egfr)
+#' egfr_diffrppa <- diffrppa(lusc_t.egfr)
 #'
 #' @export
 #'

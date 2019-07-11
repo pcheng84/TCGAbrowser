@@ -1,6 +1,6 @@
 #' plotcp function
 #'
-#' Draws plotly plot of copy number matrix
+#' Draws plot of copy number matrix
 #'
 #' @param mae MultiAssayExperiment object. Must contain assays GISTIC or a matrix of copy number values, assay should contain "GISTIC" in the name,
 #' and Cohort (from `rnasubset` or `mutsubset`)
@@ -9,7 +9,6 @@
 #' @param n numeric(1) number of genes to plot default is 20
 #'
 #' @import data.table
-#' @import plotly
 #'
 #' @return interactive oncoprint-like plot for top 20 differentially copy number altered genes
 #'

@@ -20,7 +20,7 @@ Adds an assay called Cohort to a MultiAssayExperiment object to indicate which s
 \examples{
 library(curatedTCGAData)
 library(TCGAutils)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
 
 #split tumor and normal samples
 lusc_tn <- splitAssays(lusc, c("01", "11"))

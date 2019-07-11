@@ -26,16 +26,16 @@ require(TCGAbrowser)
 The workflow for TCGAbrowser is shown in the graphic below.
 
 ```{r, out.width = "50%", echo = FALSE}
-knitr::include_graphics("workflow.png")
+knitr::include_graphics("workflow2.png")
 ```
 
 TCGAbrowser functions were designed either to subset the data, perform statistical analysis or for plotting. 
 
 Subset functions include `rnasubset` and `mutsubset` which that subset the data based on RNA expression and mutation status respectively. 
 
-Analysis functions include: `diffmut` for differential mutation analysis; `diffcp` for differential copy number analysis; `rnadeg` for differential RNA expression analysis; `rnagsva` and `rnagsvasig` for differential GSVA analysis; `rnareact` for reactome pathway analysis on the differential RNA expression analysis; `rppadeg` for differential RPPA analysis. 
+Analysis functions include: `diffmut` for differential mutation analysis; `diffcp` for differential copy number analysis; `diffrna` for differential RNA expression analysis; `rnagsva` and `rnagsvasig` for differential GSVA analysis; `rnareact` for reactome pathway analysis on the differential RNA expression analysis; `diffrppa` for differential RPPA analysis, `diffmethyl` for differential methylation analysis.
 
-Plotting functions include: `genesurv` for Kaplan-Meier survival plots; `plotlymut` for an Oncoprint-like plot of mutation data; `plotlycp` for an Oncoprint-like plot of copy number data; `rnaheat` for a heatmap of differential expressed genes; `rnagsvaheat` for a heatmap of differential expressed pathways; `plotreact` for Reactome dotplots, enrichment plots and cnetmap plots; `rppaheat` for a heatmap of differential expressed proteins.
+Plotting functions include: `plotsurv` for Kaplan-Meier survival plots; `plotmut` for an Oncoprint-like plot of mutation data; `plotcp` for an Oncoprint-like plot of copy number data; `plotrnaheat` for a heatmap of differential expressed genes; `plotgsvaheat` for a heatmap of differential expressed pathways; `plotreact` for Reactome dotplots, enrichment plots and cnetmap plots; `plotrppaheat` for a heatmap of differential expressed proteins.
 
 
 #Data download and formating
@@ -45,7 +45,7 @@ This vignette assumes the user will use one of the R packages mentioned above to
 library(curatedTCGAData)
 library(TCGAutils)
 
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray", "Methylation_methyl450"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray", "Methylation_methyl450"), FALSE)
 
 #convert genome to hg19 format
 genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
@@ -62,9 +62,7 @@ lusc_t <- tnmae[, , grep("^01", names(tnmae))]
 ```
 
 #Subset by gene expression workflow
-`rnasubset` needs 3 parameters: the multiassayexperiment, a gene and a percentage cutoff. This function will intersect the TCGA patient barcode with the sample barcodes from RNAseq. 
-
-`rnasubset` will return a multiassayexperiment object with an assay called "Cohort". The "Cohort" assay contains all samples from the RNAseq dataset and has 3 rows, the first row identifies if the sample belongs in the "low", "middle", or "high" gene expression category, the second row is the rank of gene across all samples, and the third row are the gene expression values themselves. 
+`rnasubset` needs 3 parameters: a multiassayexperiment object, a gene and a percentage cutoff. This function will return a multiassayexperiment object with an assay called "Cohort". The "Cohort" assay contains all samples from the RNAseq dataset and has 3 rows, the first row identifies if the sample belongs in the "low", "middle", or "high" gene expression category, the second row is the rank of gene across all samples, and the third row are the gene expression values themselves. 
 
 In this example, we will compare patients in the top 10% of EGFR expression and to the bottom 10% of EGFR expression.
 
@@ -81,30 +79,30 @@ plotlygenelevel(lusc_egfr)
 ```
 
 ##Survival Analysis
-`genesurv` needs 2 parameters: the output multiassayexperiment object from `rnasubset` and the gene name. `genesurv` is a wrapper for `ggsurvplot` from `r CRANpkg("survminer")`. It will plot the Kaplan-Meier curves for the high gene and low gene expression groups and report the p value from the log-rank test.   
+`plotsurv` needs 2 parameters: the output multiassayexperiment object from `rnasubset` and the gene name. `plotsurv` is a wrapper for `ggsurvplot` from `r CRANpkg("survminer")`. It will plot the Kaplan-Meier curves for the high gene and low gene expression groups and report the p value from the log-rank test.   
 
 ```{r}
 genesurv(lusc_egfr, "EGFR")
 ```
 
 ##Differential gene expression analysis
-`rnadeg` needs 2 parameters: the output multiassayexperiment object from `rnasubset`. `rnadeg` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups.
+`diffrna` needs 2 parameters: the output multiassayexperiment object from `rnasubset`. `diffrna` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups.
 
 ```{r}
-egfr_deg <- rnadeg(lusc_egfr)
+egfr_deg <- diffrna(lusc_egfr)
 head(egfr_deg)
 ```
 
-`rnaheat` needs 4 parameters: the output multiassayexperiment object from `rnasubset`, the output data.frame from `rnadeg`, the gene name, and the number of genes to plot for the heatmap. `rnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of the top 100 most significant differentially expressed genes, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
+`plotrnaheat` needs 4 parameters: the output multiassayexperiment object from `rnasubset`, the output data.frame from `diffrna`, the gene name, and the number of genes to plot for the heatmap. `plotrnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of the top 100 most significant differentially expressed genes, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
 
 ```{r}
-rnaheat(lusc_egfr, egfr_deg, "EGFR", 100)
+plotrnaheat(lusc_egfr, egfr_deg, "EGFR", 100)
 ```
 
 ##Reactome pathway analysis
-`rnareact` needs 1 parameter: the output table from `rnasubset`. `rnareact` is wrapper for `enrichPathway` from `r Biocpkg("ReactomePA")`. It will calculate enriched pathways from Reactome database. 
+`rnareact` needs 1 parameter: the output table from `diffrna`. `rnareact` is wrapper for `enrichPathway` from `r Biocpkg("ReactomePA")`. It will calculate enriched pathways from Reactome database. 
 
-`plotreact` needs 4 parameters: the output table from `rnareact`, the output table from `rnadeg`, the graph selection which can be 'dot', 'map', or 'cnet', and the number of pathways for plotting. `plotreact` is a wrapper for `dotplot`, `enrichMap`, and `cnetplot` from `r Biocpkg("ReactomePA")`. 
+`plotreact` needs 4 parameters: the output table from `rnareact`, the output table from `diffrna`, the graph selection which can be 'dot', 'map', or 'cnet', and the number of pathways for plotting. `plotreact` is a wrapper for `dotplot`, `enrichMap`, and `cnetplot` from `r Biocpkg("ReactomePA")`. 
 
 ```{r}
 egfr_react <- rnareact(egfr_deg)
@@ -122,26 +120,48 @@ plotreact(egfr_react, egfr_deg, "cnet", 5)
 ##Differential mutation
 `diffmut` needs a MultiAssayExperiment object from `rnasubset` or `mutsubset`. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will perform a chi-squared test for the proportions of mutated and wild-type genes between the high gene and low gene expression groups from `rnasubset` or mutated and wild-type groups from `mutsubset`. Since we use a binary matrix as a representation of mutation, we assume is any mutation in a gene would have the same effect. 
 
-`plotlymut` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffmut`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the differentially mutated genes and your gene of interest.
+`plotmut` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffmut`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the differentially mutated genes and your gene of interest.
 
 ```{r}
 egfr_dm <- diffmut(lusc_egfr)
-plotlymut(lusc_egfr, egfr_dm, "EGFR", 20)
+plotmut(lusc_egfr, egfr_dm, "EGFR", 20)
 ```
 
 ##Differential copy number analysis
 `diffcp` needs a MultiAssayExperiment object from `rnasubset` or `mutsubset`. The MultiAssayExperiment should contain a GISTIC assay where the copy number values are represented by -2, -1, 0, 1, and 2. It will perform a chi-squared test between copy number gain and copy number neutral and another chi-squared test for copy number neutral and copy number loss. 
 
-`plotlycp` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffcp`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the copy number differences and your gene of interest.
+`plotcp` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffcp`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the copy number differences and your gene of interest.
 
 ```{r}
 egfr_dcp <- diffcp(lusc_egfr)
-plotlycp(lusc_egfr, egfr_dcp, "EGFR", 20)
+plotcp(lusc_egfr, egfr_dcp, "EGFR", 20)
 ```
+
+##Differential methylation analyis
+Methylation data from TCGA usually comes from the Illumina Methyl450k arrays. The data is quite large and to get an overview of the differentially methylated regions, we collapse the methylation data to island level using the annotation from `r Biocpkg(IlluminaHumanMethylation450kanno.ilmn12.hg19)`. `methylprep` will take the median of all the probes in the island and return multiassayexperiment object with an assay named "SimpleMethyl" which contains a matrix of the median B values for each island per sample. The rownames of "SimpleMethyl" are the genomic coordinates of each island. This new MAE object can then be passed to `diffmethyl` where it will do an arcsin transformation of the B values and uses `lmfit` from `r Biocpkg(limma)` to get the differential methylated islands. 
+
+```{r}
+lusc_t <- methylprep(lusc_t)
+#subset samples by top and bottom 10% of EGFR expression
+lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
+#look for differentially methylated islands
+egfr_meth_deg <- diffmeth(lusc_t.egfr)
+```
+
+##Subsetting by mutation
+`mutsubset` needs 2 parameters: a multiassayexperiment object and a gene name. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will return a new multiassayexperiment object with an assay name "Cohort" . The "Cohort" assay contains all samples from the Mutation dataset and has 1 row identifying if the sample has the mutation in your gene of interest.
+
+```{r}
+lusc_t.egfr <- mutsubset(lusc_t, "EGFR")
+```
+
+
+
 
 #Creating Multiassayexperiment from TCGAbiolinks
 ```{r eval = FALSE, echo = TRUE}
 library(data.table)
+
 library(TCGAbiolinks)
 setwd("../")
 query <- GDCquery(project = "TCGA-SKCM",
@@ -161,6 +181,13 @@ query1 <- GDCquery(project = "TCGA-SKCM",
                   access="open")
 GDCdownload(query1)
 skcm_gis <- GDCprepare(query1)
+
+query2 <- GDCquery(project = "TCGA-SKCM",
+                  data.category = "Copy Number Variation",
+                  data.type = "Copy Number Segment",
+                  access="open")
+GDCdownload(query2, files.per.chunk = 20)
+skcm_gis2 <- GDCprepare(query2)
 setDT(skcm_gis)
 skcm_maf <- GDCquery_Maf("SKCM", pipelines = "mutect2")
 setDT(skcm_maf)

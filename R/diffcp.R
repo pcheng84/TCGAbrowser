@@ -13,7 +13,7 @@
 #' @examples
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
 #' genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
 #' seqlevelsStyle(lusc[[2]]) <- "NCBI"
 #' lusc2 <- qreduceTCGA(lusc)

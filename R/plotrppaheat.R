@@ -1,4 +1,4 @@
-#' rppaheat function
+#' plotrppaheat function
 #'
 #' Uses ComplexHeatmap to draw heatmap for RPPA data
 #'
@@ -17,17 +17,18 @@
 #' #using data from the cureatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTICT", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' rppaheat(lusc_t.egfr)
+#' egfr_diffrppa <- diffrppa(lusc_t.egfr)
+#' plotrppaheat(lusc_t.egfr)
 #' @export
 #'
-rppaheat <- function(mae, gene) {
+plotrppaheat <- function(mae, gene) {
   #Find which assays contain expression levels, RPPA data, and RNASeq data
   exp_assay <- grep("Cohort", names(mae))
   rppa_assay <- grep("RPPA", names(mae))

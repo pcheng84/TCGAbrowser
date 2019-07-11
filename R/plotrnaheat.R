@@ -1,4 +1,4 @@
-#' rnaheat function
+#' plotrnaheat function
 #'
 #' Uses ComplexHeatmap to draw heatmap
 #'
@@ -24,12 +24,12 @@
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' egfr_deg <- rnadeg(lusc_t.egfr)
-#' rnaheat(lusc_t.egfr, egfr_deg, "EGFR", 100)
+#' egfr_deg <- diffrna(lusc_t.egfr)
+#' plotrnaheat(lusc_t.egfr, egfr_deg, "EGFR", 100)
 #'
 #' @export
 #'
-rnaheat <- function(mae, deg, gene, n = 100) {
+plotrnaheat <- function(mae, deg, gene, n = 100) {
   stopifnot(any(grepl("Cohort", names(mae))))
 
   rna_assay_num <- grep("RNASeq", names(mae))
