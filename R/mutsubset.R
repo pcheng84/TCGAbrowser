@@ -40,7 +40,7 @@ mutsubset <- function(mae, gene) {
 
   #Mark which samples have the mutated gene and which are wild-type, save as matrix
   level <- matrix(nrow = 1, ncol = nrow(gene1), dimnames = list("level", gene1$colname))
-  level["level", factor(gene1$value, levels = c(1,0), labels =c("Mutated", "WT")]
+  level["level", factor(gene1$value, levels = c(1,0), labels =c("Mutated", "WT"))]
 
 
   #Append expression level matrix to original MAE object

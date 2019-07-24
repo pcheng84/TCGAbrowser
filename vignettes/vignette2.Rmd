@@ -120,7 +120,7 @@ plotreact(egfr_react, egfr_deg, "cnet", 5)
 ##Differential mutation
 `diffmut` needs a MultiAssayExperiment object from `rnasubset` or `mutsubset`. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will perform a chi-squared test for the proportions of mutated and wild-type genes between the high gene and low gene expression groups from `rnasubset` or mutated and wild-type groups from `mutsubset`. Since we use a binary matrix as a representation of mutation, we assume is any mutation in a gene would have the same effect. 
 
-`plotmut` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffmut`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the differentially mutated genes and your gene of interest.
+`plotmut` needs 4 parameters: the MultiAssayExperiment object from `rnasubset` or `mutsubset`, the output table from `diffmut`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the differentially mutated genes and your gene of interest.
 
 ```{r}
 egfr_dm <- diffmut(lusc_egfr)
@@ -138,7 +138,7 @@ plotcp(lusc_egfr, egfr_dcp, "EGFR", 20)
 ```
 
 ##Differential methylation analyis
-Methylation data from TCGA usually comes from the Illumina Methyl450k arrays. The data is quite large and to get an overview of the differentially methylated regions, we collapse the methylation data to island level using the annotation from `r Biocpkg(IlluminaHumanMethylation450kanno.ilmn12.hg19)`. `methylprep` will take the median of all the probes in the island and return multiassayexperiment object with an assay named "SimpleMethyl" which contains a matrix of the median B values for each island per sample. The rownames of "SimpleMethyl" are the genomic coordinates of each island. This new MAE object can then be passed to `diffmethyl` where it will do an arcsin transformation of the B values and uses `lmfit` from `r Biocpkg(limma)` to get the differential methylated islands. 
+Methylation data from TCGA usually comes from the Illumina Methyl450k arrays. The data is quite large and to get an overview of the differentially methylated regions, we collapse the methylation data to island level using the annotation from `r Biocpkg(IlluminaHumanMethylation450kanno.ilmn12.hg19)`. `methylprep` will take the median of all the probes in the island and return MultiAssayExperiment object with an assay named "SimpleMethyl" which contains a matrix of the median B values for each island per sample. The rownames of "SimpleMethyl" are the genomic coordinates of each island. This new MAE object can then be passed to `diffmethyl` where it will do an arcsin transformation of the B values and uses `lmfit` from `r Biocpkg(limma)` to get the differential methylated islands. 
 
 ```{r}
 lusc_t <- methylprep(lusc_t)
@@ -149,7 +149,7 @@ egfr_meth_deg <- diffmeth(lusc_t.egfr)
 ```
 
 ##Subsetting by mutation
-`mutsubset` needs 2 parameters: a multiassayexperiment object and a gene name. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will return a new multiassayexperiment object with an assay name "Cohort" . The "Cohort" assay contains all samples from the Mutation dataset and has 1 row identifying if the sample has the mutation in your gene of interest.
+`mutsubset` needs 2 parameters: a MultiAssayExperiment object and a gene name. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will return a new MultiAssayExperiment object with an assay name "Cohort" . The "Cohort" assay contains all samples from the Mutation dataset and has 1 row identifying if the sample has the mutation in your gene of interest.
 
 ```{r}
 lusc_t.egfr <- mutsubset(lusc_t, "EGFR")
