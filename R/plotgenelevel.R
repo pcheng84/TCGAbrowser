@@ -30,6 +30,6 @@ plotgenelevel <- function(mae) {
   geplot$Cohort_level <- factor(geplot$Cohort_level, levels = unique(geplot$Cohort_level))
   geplot$Samples <- factor(geplot$primary, levels = geplot$primary[order(geplot$logcounts)])
   ggplot(data = geplot, aes(x = Samples, y = logcounts, color = ~Cohort_level)) +
-    geom_barplot() +
+    geom_bar() +
     theme_bw()
 }

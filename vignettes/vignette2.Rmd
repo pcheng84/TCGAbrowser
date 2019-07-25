@@ -71,10 +71,10 @@ lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 ```
 
 ##Expression plotting
-The output table from `rnasubset` can be used for downstream analysis and plotting functions. `plotlygenelevel` and `hchartgenelevel` are wrappers for `plot_ly` from `r CRANpkg("plotly")` and `hchart` from `r CRANpkg("highcharter")` respectively. These two functions will plot the gene expression of your gene of interest across all samples with coloring for the low, middle and high groups. 
+The output table from `rnasubset` can be used for downstream analysis and plotting functions. `plotgenelevel` will create a ggplot style dotplot  These two functions will plot the gene expression of your gene of interest across all samples with coloring for the low, middle and high groups. 
 
 ```{r}
-plotlygenelevel(lusc_egfr)
+plotgenelevel(lusc_egfr)
 
 ```
 
