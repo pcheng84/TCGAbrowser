@@ -19,7 +19,7 @@ The motivation for TCGAbrowser was to provide convenience functions and wrappers
 To install TCGAbrowser use the code below.
 ```{r, message = FALSE, warning = FALSE}
 require(devtools)
-devtools::install_github("pcheng84/TCGAbrowser", ref = "multiAssayExperiment")
+#devtools::install_github("pcheng84/TCGAbrowser", ref = "multiAssayExperiment")
 require(TCGAbrowser)
 ```
 

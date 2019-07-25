@@ -22,6 +22,7 @@
 #' lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 #'
 #' @export
+#'
 rnasubset <- function(mae, gene, percent) {
 
   #check if mae is MultiAssayExperiment
