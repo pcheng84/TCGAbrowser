@@ -37,7 +37,7 @@
 #'
 #' @export
 #'
-plotlymut <- function(mae, genemut, gene, n = 20) {
+plotmut <- function(mae, genemut, gene, n = 20) {
   #check only one mutation and one cohort assay in the multiassayexperiment object
   stopifnot(class(mae) == "MultiAssayExperiment", any(grepl("Mutation", names(mae))), any(grepl("Cohort", names(mae))))
   if(length(grep("Mutation", names(mae))) > 1)

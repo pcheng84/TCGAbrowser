@@ -32,7 +32,7 @@ lusc_tn <- splitAssays(lusc, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples
 lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-egfr_deg <- rnadeg(lusc_t.egfr)
+egfr_deg <- diffrna(lusc_t.egfr)
 egfr_react <- rnareact(egfr_deg)
 plotreact(egfr_react, egfr_deg, "dot", 10)
 plotreact(egfr_react, egfr_deg, "map", 10)

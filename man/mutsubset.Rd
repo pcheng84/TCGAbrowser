@@ -4,12 +4,12 @@
 \alias{mutsubset}
 \title{mutsubset function}
 \usage{
-mutsubset(pat, rna, mut, gene)
+mutsubset(mae, gene)
 }
 \arguments{
-\item{gene}{character(1) A gene to subset the mutation data}
-
 \item{mae}{MultiAssayExperiment object containing a simplifed Mutation assay generated from `qreduceTCGA`, must have assay with "Mutation" in the name}
+
+\item{gene}{character(1) A gene to subset the mutation data}
 }
 \value{
 Returns a MultiAssayExperiment object with an assay called Cohort that labels the samples according to "mutated" and "wild-type" for the gene of interest
@@ -21,9 +21,11 @@ Adds an assay called Cohort to a MultiAssayExperiment object to indicate which s
 library(curatedTCGAData)
 library(TCGAutils)
 lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
-
+genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
+seqlevelsStyle(lusc[[2]]) <- "NCBI"
+lusc2 <- qreduceTCGA(lusc)
 #split tumor and normal samples
-lusc_tn <- splitAssays(lusc, c("01", "11"))
+lusc_tn <- splitAssays(lusc2, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples
 lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 lusc_egfr <- mutsubset(lusc_t, "EGFR")
