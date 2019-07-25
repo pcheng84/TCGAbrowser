@@ -32,6 +32,7 @@
 #' @export
 #'
 methylprep <- function(mae) {
+  library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
   stopifnot(any(grepl("Methylation", names(mae))))
 
   #Get Illumina methylation island data

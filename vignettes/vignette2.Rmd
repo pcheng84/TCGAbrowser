@@ -145,7 +145,7 @@ lusc_t <- methylprep(lusc_t)
 #subset samples by top and bottom 10% of EGFR expression
 lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #look for differentially methylated islands
-egfr_meth_deg <- diffmeth(lusc_t.egfr)
+egfr_meth_deg <- diffmethyl(lusc_t.egfr)
 ```
 
 ##Subsetting by mutation
