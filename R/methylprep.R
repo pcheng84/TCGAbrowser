@@ -1,12 +1,13 @@
 #' methylprep function
 #'
 #' Converts the methylation 450 SummarizedExperiment into a matrix of gene associated CpG Islands and samples
-#' Uses CpG island definitions from `r Biocpkg(IlluminaHumanMethylation450kanno.ilmn12.hg19)`
+#' Uses CpG island definitions from `r Biocpkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")`
 #'
 #' @param mae MultiAssayExperiment object containing Methylation assay and Cohort assay from rnasubset
 #'
 #' @import data.table
 #' @import MultiAssayExperiment
+#' @importFrom minfi getAnnotation
 #' @import IlluminaHumanMethylation450kanno.ilmn12.hg19
 #'
 #' @return Returns the MultiAssayExperiment object with a new assay called SimpleMethyl contains a matrix of gene associated CpG islands and samples
@@ -16,7 +17,7 @@
 #' #using data from the cureatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray", "Methylation_methyl450"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray", "Methylation_methyl450"), FALSE)
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
 #' #remake MultiAssayExperiment with only primary tumor samples

@@ -39,7 +39,7 @@ lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 genesurv(lusc_egfr, "EGFR")
 
 library(curatedTCGAData)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
 
 #split tumor and normal samples
 lusc_tn <- splitAssays(lusc2, c("01", "11"))

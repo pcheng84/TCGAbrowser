@@ -18,7 +18,7 @@
 #' #using data from the cureatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_AllbyGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
