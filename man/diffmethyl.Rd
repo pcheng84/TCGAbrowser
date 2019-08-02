@@ -27,8 +27,8 @@ lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #subset LUSC data by expression of EGFR
 lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #prepare methylation data for differential methylation
-methylprep(lusc_t.egfr)
+lusc_t.egfr2 <- methylprep(lusc_t.egfr)
 #find differential methlyated islands between the high and low groups
-egfr_diffmeth <- diffmethyl(lusc_t.egfr)
+egfr_diffmeth <- diffmethyl(lusc_t.egfr2)
 
 }

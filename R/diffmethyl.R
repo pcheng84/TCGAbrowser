@@ -23,9 +23,9 @@
 #' #subset LUSC data by expression of EGFR
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #' #prepare methylation data for differential methylation
-#' methylprep(lusc_t.egfr)
+#' lusc_t.egfr2 <- methylprep(lusc_t.egfr)
 #' #find differential methlyated islands between the high and low groups
-#' egfr_diffmeth <- diffmethyl(lusc_t.egfr)
+#' egfr_diffmeth <- diffmethyl(lusc_t.egfr2)
 #'
 #' @export
 #'
@@ -42,30 +42,20 @@ diffmethyl <- function(mae) {
   lvl2 <- data.frame(Cohort = colnames(mae2[[2]]), Level = mae2[[2]][1,])
   lvl3 <- merge(annot, lvl2, by = "Cohort")
 
-  lvl.high <- lvl3[lvl3$Level == "high", grep("Mutation", colnames(lvl3))]
-  lvl.low <- lvl3[lvl3$Level == "low", grep("Mutation", colnames(lvl3))]
+  meth <- assay(mae2[, lvl3[lvl3$Level != "medium", "primary"], 1])
+  grps <- factor(lvl3[lvl3$Level != "medium", "Level"], levels = c("low", "high"))
+  #create model matrix
+  design <- model.matrix(~0+grps)
+  colnames(design) <- c("low", "high")
+  #Perform DGE analysis using lmFit and return table with intercept and pvalue
+  fit <- lmFit(meth, design)
 
-  meth <- assay(mae2[[1]])
-
-  #Get expression levels (which were appended by function rnasubset()), ID those with high / low expression
-  level_assay_num <- grep("Cohort", names(mae))
-  lvl <- mae[[level_assay_num]]
-  good_levels <- names(lvl[1, lvl[1,] != "medium"])
-
-  #Associate expression levels with methylation names
-  levels <- lvl
-  colnames(levels) <- TCGAbarcode(colnames(levels))
-  levels <- levels[, TCGAbarcode(colnames(meth))]
-
-  #convert median methylation data to matrix and create model matrix
-  meth.mat <- as.matrix(methyltest7[, 2:ncol(methyltest7)])
-  row.names(meth.mat) <- methyltest7$Island_Name
-  design <- model.matrix(~ factor(levels["level", ]))
-
-  #Perform DGE analysis on asin transformed data and return result
-  fit <- lmFit(asin(meth.mat), design)
-  fit2 <- eBayes(fit, trend = TRUE)
-  fit3 <- topTable(fit2, coef=2, n=Inf, adjust.method="BH", p.value=0.05, lfc = 0.1, sort="p")
-  fit3
+  fit2 <- contrasts.fit(fit, contrasts(grps))
+  fit3 <- eBayes(fit2)
+  t1 <- data.frame(intercept = fit3$coefficients[,1],
+                    f = fit3[["F"]],
+                    pval = fit3[["F.p.value"]],
+                   adj.pval = p.adjust(fit3[["F.p.value"]], method = "BH"))
+  t1
 
 }

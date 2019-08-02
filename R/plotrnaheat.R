@@ -14,7 +14,7 @@
 #' @return ComplexHeatmap of top 100 significant differentially expressed genes
 #'
 #' @examples
-#' #using data from the cureatedTCGAdata set
+#' #using data from the curatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
 #' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
