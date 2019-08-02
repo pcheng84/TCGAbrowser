@@ -28,9 +28,10 @@
 #' #find differential methlyated islands between the high and low groups
 #' egfr_diffmeth <- diffmethyl(lusc_t.egfr2)
 #' plotmethylheat(lusc_t.egfr2, egfr_diffmeth, "EGFR", 100)
+#'
 #' @export
 #'
-plotrnaheat <- function(mae, dmi, gene, n = 100) {
+plotmethylheat <- function(mae, dmi, gene, n = 100) {
   stopifnot(any(grepl("Cohort", names(mae))))
   stopifnot(any(grepl("SimpleMethyl", names(mae))))
 

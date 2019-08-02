@@ -45,17 +45,16 @@ diffmethyl <- function(mae) {
   meth <- assay(mae2[, lvl3[lvl3$Level != "medium", "primary"], 1])
   grps <- factor(lvl3[lvl3$Level != "medium", "Level"], levels = c("low", "high"))
   #create model matrix
-  design <- model.matrix(~0+grps)
+  design <- model.matrix(~grps)
   colnames(design) <- c("low", "high")
   #Perform DGE analysis using lmFit and return table with intercept and pvalue
   fit <- lmFit(meth, design)
 
-  fit2 <- contrasts.fit(fit, contrasts(grps))
-  fit3 <- eBayes(fit2)
-  t1 <- data.frame(intercept = fit3$coefficients[,1],
-                    f = fit3[["F"]],
-                    pval = fit3[["F.p.value"]],
-                   adj.pval = p.adjust(fit3[["F.p.value"]], method = "BH"))
+  fit2 <- eBayes(fit)
+  t1 <- data.frame(intercept = fit2$coefficients[,1],
+                    f = fit2[["F"]],
+                    pval = fit2[["F.p.value"]],
+                   adj.pval = p.adjust(fit2[["F.p.value"]], method = "BH"))
   t1
 
 }
