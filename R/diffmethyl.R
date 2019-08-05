@@ -34,9 +34,9 @@ diffmethyl <- function(mae) {
   stopifnot(any(grepl("SimpleMethyl", names(mae))))
 
   meth_assay <- grep("SimpleMethyl", names(mae))
-  exp_assay <- grep("Cohort", names(mae))
+  cohort_assay <- grep("Cohort", names(mae))
 
-  mae2 <- intersectColumns(mae[, , c(meth_assay, exp_assay)])
+  mae2 <- intersectColumns(mae[, , c(meth_assay, cohort_assay)])
 
   annot <- dcast(as.data.frame(sampleMap(mae2)), primary ~ assay, value.var = "colname")
   lvl2 <- data.frame(Cohort = colnames(mae2[[2]]), Level = mae2[[2]][1,])

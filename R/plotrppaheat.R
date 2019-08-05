@@ -25,67 +25,45 @@
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #' egfr_diffrppa <- diffrppa(lusc_t.egfr)
-#' plotrppaheat(lusc_t.egfr)
+#' plotrppaheat(lusc_t.egfr, "EGFR")
 #' @export
 #'
 plotrppaheat <- function(mae, gene) {
-  #Find which assays contain expression levels, RPPA data, and RNASeq data
-  exp_assay <- grep("Cohort", names(mae))
+  #make sure MultiAssayExperiment object contains Cohort assay and RPPA assay
+  stopifnot(any(grepl("Cohort", names(mae))))
+  stopifnot(any(grepl("RPPA", names(mae))))
+
+  #Get expression levels (which were appended by function rnasubset()), ID those with high / low expression
   rppa_assay <- grep("RPPA", names(mae))
-  rna_assay <- grep("RNASeq2GeneNorm", names(mae))
+  cohort_assay <- grep("Cohort", names(mae))
 
-  #Get names of samples with high and low expression, convert them to common format
-  cohort <- mae[[exp_assay]]
-  high_index <- cohort["level", ] == "high"
-  low_index <- cohort["level", ] == "low"
-  high <- TCGAbarcode(colnames(cohort)[high_index], sample = T)
-  low  <- TCGAbarcode(colnames(cohort)[low_index], sample = T)
+  mae2 <- intersectColumns(mae[, , c(rppa_assay, cohort_assay)])
 
-  #Find the patients in RPPA assay corresponding to above
-  overlap_high <- TCGAbarcode(colnames(mae[[rppa_assay]]), sample = T) %in% high
-  overlap_high <- colnames(mae[[rppa_assay]])[overlap_high]
+  #create annotation table for sample matching between RPPA and Cohort samples
+  annot <- dcast(as.data.frame(sampleMap(mae2)), primary ~ assay, value.var = "colname")
+  lvl2 <- data.frame(Cohort = colnames(mae2[[2]]), Level = mae2[[2]][1,])
+  lvl3 <- merge(annot, lvl2, by = "Cohort")
 
-  overlap_low <- TCGAbarcode(colnames(mae[[rppa_assay]]), sample = T) %in% low
-  overlap_low <- colnames(mae[[rppa_assay]])[overlap_low]
-  all_overlaps <- c(overlap_high, overlap_low)
+  #Extract RPPA data for all genes, subset out the "medium" expression group
+  rppa <- assay(mae2[, lvl3[lvl3$Level != "medium", "primary"], 1])
+  grps <- factor(lvl3[lvl3$Level != "medium", "Level"], levels = c("low", "high"))
 
-  #Extract RPPA data, limit to samples ID'd above, convert to matrix, get complete cases, convert names to common format
-  counts <- mae[[rppa_assay]]
-  counts <- counts[, all_overlaps]
-  counts <- as.matrix(assay(counts))
-  counts <- counts[complete.cases(counts), ]
-  colnames(counts) <- TCGAbarcode(colnames(counts))
-
-  #Extract RNA data for high/low expression. Pretty much just for the heatmap annotation.
-  rna_overlap_high <- TCGAbarcode(colnames(mae[[exp_assay]]), sample = T) %in% TCGAbarcode(overlap_high, sample = T)
-  rna_overlap_high <- colnames(mae[[exp_assay]])[rna_overlap_high]
-  rna_overlap_low <- TCGAbarcode(colnames(mae[[exp_assay]]), sample = T) %in% TCGAbarcode(overlap_low, sample = T)
-  rna_overlap_low <- colnames(mae[[exp_assay]])[rna_overlap_low]
-
-
-  #Make heatmap annotation data frame, 2 columns, first is high/low, second is gene expression
-  df <- data.frame(c(rep("high", times = length(overlap_high)),
-                     rep("low" , times = length(overlap_low))),
-                   c(assay(mae[gene, TCGAbarcode(rna_overlap_high), rna_assay]),
-                     assay(mae[gene, TCGAbarcode(rna_overlap_low ), rna_assay])))
-  colnames(df) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
-
-  #make colors, name them high/low
+  #Make heatmap annotation data frame
+  df <- data.frame(Cell = lvl3[lvl3$Level != "medium", "Level"],
+                   stringsAsFactors = FALSE)
+  colnames(df) <- paste0(gene, "_group")
   cellcol <- c("#ca0020", "#0571b0")
   names(cellcol) <- c("high", "low")
-  col1 <- list(Cell = cellcol,
-               expression = colorRamp2(range(df[, 2]), c("white", "purple")))
-  names(col1) <- c(paste0(gene, "_group"), paste0(gene, "_expression"))
+  col1 <- list(Cell = cellcol)
+  names(col1) <- paste0(gene, "_group")
+  top_ha <- HeatmapAnnotation(df = df,
+                              col = col1,
+                              show_annotation_name = TRUE)
+  Heatmap(rppa, top_annotation = top_ha, name = "color scale",
+          #col = colorRamp2(c(min(cd.t), 0, max(cd.t)), c("blue", "white", "red")),
+          show_column_names = T,
+          row_names_gp = gpar(fontsize = 8),
+          column_names_gp = gpar(fontsize = 6),
+          column_dend_reorder = as.numeric(df[, 1]))
 
-  #Complete heatmap annotation object
-  top_ha <- HeatmapAnnotation(df = df, col = col1)
-
-  #Draw and decorate heatmap
-  x <- Heatmap(counts, top_annotation = top_ha, name = "color scale",
-               show_column_names = T,
-               row_names_gp = gpar(fontsize = 8),
-               column_names_gp = gpar(fontsize = 6),
-               column_dend_reorder = as.numeric(df[, 1]))
-
-  draw(x)
 }

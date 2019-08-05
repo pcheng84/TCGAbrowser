@@ -13,10 +13,10 @@
 #' @return data frame of significant differentially expressed proteins between the two groups defined in rnasubset or mutsubset
 #'
 #' @examples
-#' #using data from the cureatedTCGAdata set
+#' #using data from the curatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "RPPAArray"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
@@ -27,27 +27,33 @@
 #'
 #' @export
 #'
-rppadeg <- function(mae) {
+diffrppa <- function(mae) {
+  #make sure MultiAssayExperiment object contains Cohort assay and RPPA assay
   stopifnot(any(grepl("Cohort", names(mae))))
+  stopifnot(any(grepl("RPPA", names(mae))))
 
   #Get expression levels (which were appended by function rnasubset()), ID those with high / low expression
-  level_assay_num <- grep("Cohort", names(mae))
-  lvl <- mae[[level_assay_num]]
-  good_levels <- names(lvl[1, lvl[1,] != "medium"])
+  rppa_assay <- grep("RPPA", names(mae))
+  cohort_assay <- grep("Cohort", names(mae))
+
+  mae2 <- intersectColumns(mae[, , c(rppa_assay, cohort_assay)])
+
+  #create annotation table for sample matching between RPPA and Cohort samples
+  annot <- dcast(as.data.frame(sampleMap(mae2)), primary ~ assay, value.var = "colname")
+  lvl2 <- data.frame(Cohort = colnames(mae2[[2]]), Level = mae2[[2]][1,])
+  lvl3 <- merge(annot, lvl2, by = "Cohort")
 
   #Extract RPPA data for all genes, subset out the "medium" expression group
-  rppa_assay_num <- grep("RPPA", names(mae))
-  rppa <- assay(mae[[rppa_assay_num]])
-  rppa <- rppa[, TCGAbarcode(names(rppa)) %in% TCGAbarcode(good_levels)]
+  rppa <- assay(mae2[, lvl3[lvl3$Level != "medium", "primary"], 1])
+  grps <- factor(lvl3[lvl3$Level != "medium", "Level"], levels = c("low", "high"))
 
-  #Associate expression levels with RPPA names
-  levels <- lvl
-  colnames(levels) <- TCGAbarcode(colnames(levels))
-  levels <- levels[, TCGAbarcode(names(rppa))]
+  #create model matrix
+  design <- model.matrix(~grps)
+  colnames(design) <- c("low", "high")
 
   #Convert RPPA data to matrix and create model matrix
   rppa.mat <- as.matrix(rppa)
-  design <- model.matrix(~ factor(levels["level", ]))
+  design <- model.matrix(~grps)
 
   # Run limma and retrun results
   fit <- lmFit(rppa.mat, design)

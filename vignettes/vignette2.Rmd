@@ -82,7 +82,7 @@ plotgenelevel(lusc_egfr)
 `plotsurv` needs 2 parameters: the output multiassayexperiment object from `rnasubset` and the gene name. `plotsurv` is a wrapper for `ggsurvplot` from `r CRANpkg("survminer")`. It will plot the Kaplan-Meier curves for the high gene and low gene expression groups and report the p value from the log-rank test.   
 
 ```{r}
-genesurv(lusc_egfr, "EGFR")
+plotsurv(lusc_egfr, "EGFR")
 ```
 
 ##Differential gene expression analysis

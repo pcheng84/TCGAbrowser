@@ -13,13 +13,13 @@
 #' @examples
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("RNASeq2GeneNorm"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
-#' lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
+#' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #'
 #' @export
 #'

@@ -13,7 +13,7 @@
 #' #using data from the cureatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("RNASeq2GeneNorm"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
@@ -27,13 +27,13 @@
 diffrna <- function(mae) {
   stopifnot(any(grepl("Cohort", names(mae))))
   #Get expression levels (which were appended by function rnasubset()), ID those with high / low expression
-  level_assay_num <- grep("Cohort", names(mae))
-  lvl <- mae[[level_assay_num]]
+  cohort_assay <- grep("Cohort", names(mae))
+  lvl <- mae[[cohort_assay]]
   good_levels <- names(lvl[1, lvl[1,] != "medium"])
 
   #Extract RNASeq data for all genes, subset out the "medium" expression group
-  rna_assay_num <- grep("RNASeq", names(mae))
-  counts <- assay(mae[[rna_assay_num]])
+  rna_assay <- grep("RNASeq", names(mae))
+  counts <- assay(mae[[rna_assay]])
   counts <- counts[, good_levels]
 
   #Create DGEList

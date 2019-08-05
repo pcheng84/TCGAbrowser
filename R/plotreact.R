@@ -18,7 +18,7 @@
 #' #using data from the cureatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("RNASeq2GeneNorm"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
@@ -30,6 +30,7 @@
 #' plotreact(egfr_react, egfr_deg, "dot", 10)
 #' plotreact(egfr_react, egfr_deg, "map", 10)
 #' plotreact(egfr_react, egfr_deg, "cnet", 10)
+#'
 #' @export
 #'
 plotreact <- function(react, deg, graph, n = 10) {

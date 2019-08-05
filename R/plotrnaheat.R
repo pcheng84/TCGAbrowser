@@ -17,7 +17,7 @@
 #' #using data from the curatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("RNASeq2GeneNorm"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
@@ -32,12 +32,12 @@
 plotrnaheat <- function(mae, deg, gene, n = 100) {
   stopifnot(any(grepl("Cohort", names(mae))))
 
-  rna_assay_num <- grep("RNASeq", names(mae))
-  cohort_assay_num <- grep("Cohort", names(mae))
-  lvl <- mae[[cohort_assay_num]]
+  rna_assay <- grep("RNASeq", names(mae))
+  cohort_assay <- grep("Cohort", names(mae))
+  lvl <- mae[[cohort_assay]]
   good_levels <- names(lvl[1, lvl[1,] != "medium"])
 
-  rna <- assay(mae[[rna_assay_num]])
+  rna <- assay(mae[[rna_assay]])
   rna2 <- rna[deg$genes[1:n], good_levels]
 
   h1 <- t(apply(log(rna2+1, 2), 1, scale))

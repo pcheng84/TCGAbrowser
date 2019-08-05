@@ -12,18 +12,18 @@
 #'
 #' @examples
 #' library(curatedTCGAData)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc2, c("01", "11"))
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
-#' lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' plotsurv(lusc_egfr, "EGFR")
+#' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
+#' plotsurv(lusc_t.egfr, "EGFR")
 #'
 #' @export
 #'
-genesurv <- function(mae, gene) {
+plotsurv <- function(mae, gene) {
   #check if Cohort matrix has been made for MultiAssayExperiment
   stopifnot(any(grepl("Cohort", names(mae))))
 
