@@ -64,5 +64,4 @@ plotmethylheat <- function(mae, dmi, gene, n = 100) {
           column_names_gp = gpar(fontsize = 6),
           column_dend_reorder = as.numeric(df[, 1]))
 
-
 }
