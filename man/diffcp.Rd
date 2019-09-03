@@ -19,7 +19,7 @@ Computes gene with differential copy number between two subgroups selected by `r
 \examples{
 library(curatedTCGAData)
 library(TCGAutils)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene"), FALSE)
 genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
 seqlevelsStyle(lusc[[2]]) <- "NCBI"
 lusc2 <- qreduceTCGA(lusc)
@@ -32,7 +32,7 @@ lusc.t <- tnmae[, , grep("^01", names(tnmae))]
 lusc_tn <- splitAssays(lusc2, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples
 lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
-lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
-egfr_dcp <- diffcp(lusc_egfr)
+lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
+egfr_dcp <- diffcp(lusc_t.egfr)
 
 }

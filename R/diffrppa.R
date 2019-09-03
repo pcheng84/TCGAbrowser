@@ -3,7 +3,8 @@
 #' Uses limma to find differentially expressed proteins between the high and low groups
 #'
 #' @param mae MultiAssayExperiment object containing RNAseq assay and Cohort assay from rnasubset
-#'
+#' @param lfc log fold change cutoff for differential protein expression, default = 1
+#' @param pvalue pvalue cutoff for differential protein expression, default = 0.05
 #'
 #' @import data.table
 #' @import edgeR
@@ -23,11 +24,11 @@
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' egfr_diffrppa <- diffrppa(lusc_t.egfr)
+#' egfr_diffrppa <- diffrppa(lusc_t.egfr, 1, 0.05)
 #'
 #' @export
 #'
-diffrppa <- function(mae) {
+diffrppa <- function(mae, lfc = 1, pvalue = 0.05) {
   #make sure MultiAssayExperiment object contains Cohort assay and RPPA assay
   stopifnot(any(grepl("Cohort", names(mae))))
   stopifnot(any(grepl("RPPA", names(mae))))
@@ -55,9 +56,9 @@ diffrppa <- function(mae) {
   rppa.mat <- as.matrix(rppa)
   design <- model.matrix(~grps)
 
-  # Run limma and retrun results
+  # Run limma and return results
   fit <- lmFit(rppa.mat, design)
   fit2 <- eBayes(fit)
-  fit3 <- topTable(fit2, coef=2, n=Inf, adjust.method="BH", p.value=0.05, lfc=1,sort="p")
+  fit3 <- topTable(fit2, coef=2, n=Inf, adjust.method="BH", lfc = lfc, p.value=pvalue, sort="p")
   fit3
 }

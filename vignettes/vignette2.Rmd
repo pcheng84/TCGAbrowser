@@ -26,7 +26,7 @@ require(TCGAbrowser)
 The workflow for TCGAbrowser is shown in the graphic below.
 
 ```{r, out.width = "50%", echo = FALSE}
-knitr::include_graphics("workflow2.png")
+knitr::include_graphics("workflow.png")
 ```
 
 TCGAbrowser functions were designed either to subset the data, perform statistical analysis or for plotting. 
@@ -151,7 +151,7 @@ egfr_meth_deg <- diffmethyl(lusc_t.egfr)
 ##Subsetting by mutation
 `mutsubset` needs 2 parameters: a MultiAssayExperiment object and a gene name. The MultiAssayExperiment should contain an assay with a simplified Mutation from `qreduceTCGA` or a binary matrix representing mutated and wild-type genes. It will return a new MultiAssayExperiment object with an assay name "Cohort" . The "Cohort" assay contains all samples from the Mutation dataset and has 1 row identifying if the sample has the mutation in your gene of interest.
 
-```{r}
+```{r eval = FALSE, echo = TRUE}
 lusc_t.egfr <- mutsubset(lusc_t, "EGFR")
 ```
 

@@ -8,7 +8,7 @@
 #' @param n numeric(1) number of genes to plot for the heatmap, default = 100
 #'
 #' @import ComplexHeatmap
-#' @import circlize
+#' @importFrom circlize colorRamp2
 #'
 #' @return ComplexHeatmap of top 100 significant differentially methylated islands
 #'
@@ -16,7 +16,7 @@
 #' #using data from the curatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray", "Methylation_methyl450"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("RNASeq2GeneNorm", "Methylation_methyl450"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
@@ -58,7 +58,7 @@ plotmethylheat <- function(mae, dmi, gene, n = 100) {
                               col = col1,
                               show_annotation_name = TRUE)
   Heatmap(meth, top_annotation = top_ha, name = "color scale",
-          #col = colorRamp2(c(min(cd.t), 0, max(cd.t)), c("blue", "white", "red")),
+          col = colorRamp2(c(0, 0.5, 1), c("#5E3C99", "#FFFFFF", "#E66101")),
           show_column_names = T,
           row_names_gp = gpar(fontsize = 8),
           column_names_gp = gpar(fontsize = 6),

@@ -20,7 +20,7 @@ Uses CpG island definitions from `r Biocpkg("IlluminaHumanMethylation450kanno.il
 #using data from the cureatedTCGAdata set
 library(curatedTCGAData)
 library(TCGAutils)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray", "Methylation_methyl450"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("RNASeq2GeneNorm", "Methylation_methyl450"), FALSE)
 #split tumor and normal samples
 lusc_tn <- splitAssays(lusc, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples

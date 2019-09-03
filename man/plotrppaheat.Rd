@@ -4,7 +4,7 @@
 \alias{plotrppaheat}
 \title{plotrppaheat function}
 \usage{
-plotrppaheat(mae, gene)
+plotrppaheat(mae, dpe, gene, n)
 }
 \arguments{
 \item{mae}{MultiAssayExperiment object. Must contain assays Mutation (from curatedTCGA) and Cohort (from function rnasubset())}
@@ -28,6 +28,7 @@ lusc_tn <- splitAssays(lusc, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples
 lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-egfr_diffrppa <- diffrppa(lusc_t.egfr)
-plotrppaheat(lusc_t.egfr)
+egfr_diffrppa <- diffrppa(lusc_t.egfr, 0.1, 0.4)
+plotrppaheat(lusc_t.egfr, egfr_diffrppa, "EGFR", 50)
+
 }

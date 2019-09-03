@@ -20,9 +20,10 @@ Computes differentially mutated genes between two subgroups selected by `rnasubs
 \examples{
 library(curatedTCGAData)
 library(TCGAutils)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
-genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
-seqlevelsStyle(lusc[[2]]) <- "NCBI"
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm"), FALSE)
+mut_assay <- grep("Mutation", names(lusc))
+genome(lusc[[mut_assay]]) <- vapply(genome(lusc[[mut_assay]]), translateBuild, character(1L))
+seqlevelsStyle(lusc[[mut_assay]]) <- "NCBI"
 lusc2 <- qreduceTCGA(lusc)
 
 #remove normal samples and just focus on primaries
@@ -33,7 +34,7 @@ lusc.t <- tnmae[, , grep("^01", names(tnmae))]
 lusc_tn <- splitAssays(lusc2, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples
 lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
-lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
-egfr_dm <- diffmut(lusc_egfr)
+lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
+egfr_dm <- diffmut(lusc_t.egfr)
 
 }

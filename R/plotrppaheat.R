@@ -8,27 +8,26 @@
 #' @import data.table
 #' @import ComplexHeatmap
 #' @import circlize
-#' @importFrom edgeR cpm
-#' @importFrom TCGAutils TCGAbarcode
 #'
 #' @return ComplexHeatmap of top 100 significant differentially expressed genes
 #'
 #' @examples
-#' #using data from the cureatedTCGAdata set
+#' #using data from the curatedTCGAdata set
 #' library(curatedTCGAData)
 #' library(TCGAutils)
-#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+#' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "RPPAArray"), FALSE)
 #'
 #' #split tumor and normal samples
 #' lusc_tn <- splitAssays(lusc, c("01", "11"))
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#' egfr_diffrppa <- diffrppa(lusc_t.egfr)
-#' plotrppaheat(lusc_t.egfr, "EGFR")
+#' egfr_diffrppa <- diffrppa(lusc_t.egfr, 0.1, 0.4)
+#' plotrppaheat(lusc_t.egfr, egfr_diffrppa, "EGFR", 50)
+#'
 #' @export
 #'
-plotrppaheat <- function(mae, gene) {
+plotrppaheat <- function(mae, dpe, gene, n) {
   #make sure MultiAssayExperiment object contains Cohort assay and RPPA assay
   stopifnot(any(grepl("Cohort", names(mae))))
   stopifnot(any(grepl("RPPA", names(mae))))
@@ -45,7 +44,7 @@ plotrppaheat <- function(mae, gene) {
   lvl3 <- merge(annot, lvl2, by = "Cohort")
 
   #Extract RPPA data for all genes, subset out the "medium" expression group
-  rppa <- assay(mae2[, lvl3[lvl3$Level != "medium", "primary"], 1])
+  rppa <- assay(mae2[rownames(dpe)[1:n], lvl3[lvl3$Level != "medium", "primary"], 1])
   grps <- factor(lvl3[lvl3$Level != "medium", "Level"], levels = c("low", "high"))
 
   #Make heatmap annotation data frame
@@ -59,7 +58,7 @@ plotrppaheat <- function(mae, gene) {
   top_ha <- HeatmapAnnotation(df = df,
                               col = col1,
                               show_annotation_name = TRUE)
-  Heatmap(rppa, top_annotation = top_ha, name = "color scale",
+  Heatmap(as.matrix(rppa), top_annotation = top_ha, name = "color scale",
           #col = colorRamp2(c(min(cd.t), 0, max(cd.t)), c("blue", "white", "red")),
           show_column_names = T,
           row_names_gp = gpar(fontsize = 8),
