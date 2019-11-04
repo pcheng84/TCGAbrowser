@@ -18,10 +18,10 @@ ComplexHeatmap of top 100 significant differentially expressed genes
 Uses ComplexHeatmap to draw heatmap for RPPA data
 }
 \examples{
-#using data from the cureatedTCGAdata set
+#using data from the curatedTCGAdata set
 library(curatedTCGAData)
 library(TCGAutils)
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "RPPAArray"), FALSE)
 
 #split tumor and normal samples
 lusc_tn <- splitAssays(lusc, c("01", "11"))

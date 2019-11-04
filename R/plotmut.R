@@ -45,7 +45,8 @@ plotmut <- function(mae, genemut, gene, n = 20) {
     stop("Only one mutation assay is allowed")
   if(length(grep("Cohort", names(mae))) > 1)
     stop("Only one cohort comparison is allowed")
-
+  if(nrow(genemut) == 0)
+    return("No differentially mutated genes") else {
   # Find which assays contain mutation and expression level
   mut_assay <- grep("Mutation", names(mae))
   exp_assay <- grep("Cohort", names(mae))
@@ -109,6 +110,6 @@ plotmut <- function(mae, genemut, gene, n = 20) {
                       labels = c("Wild-type", "Mutated")) +
     ggtitle(paste(gene)) +
     facet_grid(. ~ level, scales = "free", space = "free")
-  gg3
+  gg3}
   #ggplotly(gg3)
 }

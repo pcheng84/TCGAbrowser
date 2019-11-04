@@ -31,16 +31,26 @@ plotsurv <- function(mae, gene) {
   mae <- intersectColumns(mae[, , "Cohort"])
 
   d1 <- longFormat(mae["level", , "Cohort"])
-  cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death", "vital_status", "days_to_last_followup")]), by.x = "primary", by.y = "patientID")
+  if("vital_status" %in% colnames(colData(mae))) {
+    cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death", "vital_status", "days_to_last_followup")]), by.x = "primary", by.y = "patientID")
+    cd1$years <- ifelse(cd1$vital_status == 1,
+                        round(cd1$days_to_death/365.25,2),
+                        round(cd1$days_to_last_followup/365.25, 2))
+    cd2 <- cd1[cd1$value != "medium",]
+    cd2$gene2 <- factor(cd2$value, levels = c("high", "low"))
+    survplot <- survfit(Surv(years, vital_status) ~ gene2, data = cd2)
 
-  cd1$years <- ifelse(cd1$vital_status == 1,
-                      round(cd1$days_to_death/365.25,2),
-                      round(cd1$days_to_last_followup/365.25, 2))
-
+   } else {
+  cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death.x", "vital_status.x", "days_to_last_followup.x")]), by.x = "primary", by.y = "patientID")
+  cd1$years <- ifelse(cd1$vital_status.x == 1,
+                      round(cd1$days_to_death.x/365.25,2),
+                      round(cd1$days_to_last_followup.x/365.25, 2))
   cd2 <- cd1[cd1$value != "medium",]
   cd2$gene2 <- factor(cd2$value, levels = c("high", "low"))
-  survplot <- survfit(Surv(years, vital_status) ~ gene2, data = cd2)
-    half <- summary(survplot)$table[,"median"]
+  survplot <- survfit(Surv(years, vital_status.x) ~ gene2, data = cd2)
+}
+
+  half <- summary(survplot)$table[,"median"]
   n <- summary(survplot)$table[,"records"]
   res <- ggsurvplot(survplot,
                     data = cd2,
