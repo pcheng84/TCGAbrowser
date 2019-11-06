@@ -51,17 +51,27 @@ diffmut <- function(mae) {
   annot <- dcast(as.data.frame(sampleMap(mae2)), primary ~ assay, value.var = "colname")
   lvl2 <- data.frame(Cohort = colnames(mae2[[2]]), Level = mae2[[2]][1,])
   lvl3 <- merge(annot, lvl2, by = "Cohort")
-
   lvl.high <- lvl3[lvl3$Level == "high", grep("Mutation", colnames(lvl3))]
   lvl.low <- lvl3[lvl3$Level == "low", grep("Mutation", colnames(lvl3))]
 
+  #only proceed if both high and low have more than 1 sample
+  if(length(lvl.high) == 0 | length(lvl.low) == 0)
+    return("Not enough mutation profiles") else {
   mut <- assay(mae2[[1]])
+
+  #if only one sample has mutation data just assign it
+  if(length(lvl.high)  == 1)
+    N.high <- mut[, lvl.high] else
+      N.high <- rowSums(mut[, lvl.high])
+  if(length(lvl.low) == 1)
+    N.low <- mut[, lvl.low] else
+      N.low <- rowSums(mut[, lvl.low])
 
   #calculates most mutated genes in the overlap patients
   m1 <- data.table(Gene = rownames(mut),
-                   N.high = rowSums(mut[, lvl.high]),
+                   N.high = N.high,
                    N.hightotal = length(lvl.high),
-                   N.low = rowSums(mut[, lvl.low]),
+                   N.low = N.low,
                    N.lowtotal = length(lvl.low))
 
   m2 <- m1[N.high + N.low != 0 & N.high + N.low != 1]
@@ -81,4 +91,5 @@ diffmut <- function(mae) {
     m2[, FDR := p.adjust(p.value, method = "BH")]
     setkey(m2, p.value)
     m2}
+  }
 }
