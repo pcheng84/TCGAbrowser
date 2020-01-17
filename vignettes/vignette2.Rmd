@@ -146,6 +146,8 @@ lusc_t <- methylprep(lusc_t)
 lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #look for differentially methylated islands
 egfr_meth_deg <- diffmethyl(lusc_t.egfr)
+#display differentially methylated regions
+plotmethylheat(luad_t.egfr, egfr_meth_deg, "EGFR", 10)
 ```
 
 ##Subsetting by mutation
