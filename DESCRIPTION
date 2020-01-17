@@ -28,7 +28,9 @@ Imports: data.table,
     shinydashboard,
     htmltools,
     curatedTCGAData,
-    TCGAutils
+    TCGAutils,
+    IlluminaHumanMethylation450kanno.ilmn12.hg19,
+    TxDb.Hsapiens.UCSC.hg19.knownGene
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
