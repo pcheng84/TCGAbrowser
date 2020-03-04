@@ -9,6 +9,8 @@
 #' @param n numeric(1) number of genes to plot default is 20
 #'
 #' @import data.table
+#' @import ggplot2
+#' @import reshape2
 #'
 #' @return interactive oncoprint-like plot for top 20 differentially copy number altered genes
 #'
