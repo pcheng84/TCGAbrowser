@@ -11,17 +11,13 @@ rnasubset(mae, gene, percent)
 \arguments{
 \item{mae}{MultiAssayExperiment object containing RNAseq data, must have assay with "RNAseq" in the name}
 
-\item{gene}{character(1) Gene symbol}
+\item{gene}{character(1) A gene to subset the RNAseq data}
 
 \item{percent}{numeric(1) percentile of patients to compare 1-50}
 
 \item{pat}{data frame with patient data, each patient is one row}
 
 \item{rna}{data frame with RNAseq count values, genes in rows, patients in columns}
-
-\item{gene}{character(1) A gene to subset the RNAseq data}
-
-\item{percent}{numeric(1) percentile of patients to compare 1-50}
 }
 \value{
 Returns a data frame with additional columns for gene of interest expression levels and identifier for high, middle and low groups

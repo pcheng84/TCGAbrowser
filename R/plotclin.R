@@ -4,6 +4,7 @@
 #'
 #' @param mae MultiAssayExperiment object containing colData and Cohort assay from rnasubset
 #' @param var vector of columns from colData for summarize, default is years_to_birth, gender, histological_type and pathologic stage
+#'
 #' @import data.table
 #' @import ggplot2
 #'
@@ -21,14 +22,14 @@
 #' #subset LUSC data by expression of EGFR
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
 #' #Plot clinical differences between the high and low group
-#' plotclin(lusc_t.egfr)
+#' plotclin(lusc_t.egfr, "pathologic_stage")
 #' @export
 #'
 
 plotclin <- function(mae, var) {
   #check if Cohort matrix has been made for MultiAssayExperiment
   stopifnot(any(grepl("Cohort", names(mae))))
-  if(var %in% colnames(colData(lusc.t3)) != TRUE)
+  if(var %in% colnames(colData(mae)) != TRUE)
   #only take clinical data for samples in Cohort
   mae <- intersectColumns(mae[, , "Cohort"])
 

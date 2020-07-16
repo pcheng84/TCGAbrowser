@@ -11,7 +11,6 @@
 #' @import data.table
 #' @import shiny
 #' @import shinydashboard
-#' @import rCharts
 #' @import plotly
 #'
 #'

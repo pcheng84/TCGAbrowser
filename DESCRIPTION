@@ -1,7 +1,7 @@
 Package: TCGAbrowser
 Type: Package
 Title: Explores and Analyzses TCGA Data
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: person("Phil", "Cheng", email = "phil.cheng@usz.ch", role = c("aut", "cre"))
 Description: Survival and Differential expression analysis of TCGA Data
     Integrative analysis of mutation, copy number and clinical characteristics based
@@ -30,11 +30,12 @@ Imports: data.table,
     curatedTCGAData,
     TCGAutils,
     IlluminaHumanMethylation450kanno.ilmn12.hg19,
-    TxDb.Hsapiens.UCSC.hg19.knownGene
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    gtsummary
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Suggests: knitr, 
     rmarkdown, 
     BiocStyle

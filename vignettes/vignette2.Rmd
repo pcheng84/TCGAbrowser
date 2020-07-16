@@ -74,7 +74,8 @@ lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 The output table from `rnasubset` can be used for downstream analysis and plotting functions. `plotgenelevel` will create a ggplot style dotplot  These two functions will plot the gene expression of your gene of interest across all samples with coloring for the low, middle and high groups. 
 
 ```{r}
-plotgenelevel(lusc_egfr)
+plotgenelevel(lusc_egfr, "bar")
+plotgenelevel(lusc_egfr, "box")
 
 ```
 
