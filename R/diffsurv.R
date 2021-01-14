@@ -6,6 +6,7 @@
 #' @param gene character(1) gene of interest
 #'
 #' @import survival
+#' @importFrom survminer surv_pvalue
 #'
 #' @return data frame of survival statistics
 #'
@@ -61,6 +62,7 @@ diffsurv <- function(mae, gene) {
              LCI_95 = c(t1[grep("high", rownames(t1)), "0.95LCL"],
                         t1[grep("low", rownames(t1)), "0.95LCL"]),
              UCI_95  = c(t1[grep("high", rownames(t1)), "0.95UCL"],
-                         t1[grep("low", rownames(t1)), "0.95UCL"]))
+                         t1[grep("low", rownames(t1)), "0.95UCL"]),
+             pvalue = surv_pvalue(survplot)$pval)
   }
 
