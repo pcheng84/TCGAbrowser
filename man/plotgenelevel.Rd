@@ -27,6 +27,6 @@ lusc_tn <- splitAssays(lusc, c("01", "11"))
 #remake MultiAssayExperiment with only primary tumor samples
 lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
-plotgenelevel(lusc_egfr)
+plotgenelevel(lusc_egfr, "bar")
 
 }

@@ -6,9 +6,8 @@
 #' @param gene character(1) gene of interest
 #'
 #' @import survival
-#' @import survminer
 #'
-#' @return survminer styled Survival plot
+#' @return data frame of survival statistics
 #'
 #' @examples
 #' library(curatedTCGAData)
@@ -19,7 +18,7 @@
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
-#'diffsurv(lusc_t.egfr, "EGFR")
+#' diffsurv(lusc_t.egfr, "EGFR")
 #'
 #' @export
 #'
@@ -56,7 +55,7 @@ diffsurv <- function(mae, gene) {
              n = t1[grep("high", rownames(t1)), "records"],
              events = t1[grep("high", rownames(t1)), "events"],
              median = t1[grep("high", rownames(t1)), "median"],
-             LCI_95 = t1[grep("high", rownames(t1)), " 0.95LCL"],
+             LCI_95 = t1[grep("high", rownames(t1)), "0.95LCL"],
              UCI_95  = t1[grep("high", rownames(t1)), "0.95UCL"])
   }
 
