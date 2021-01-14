@@ -14,7 +14,7 @@
 #' lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm"), FALSE)
 #'
 #' #split tumor and normal samples
-#' lusc_tn <- splitAssays(lusc2, c("01", "11"))
+#' lusc_tn <- splitAssays(lusc, c("01", "11"))
 #' #remake MultiAssayExperiment with only primary tumor samples
 #' lusc_t <- lusc_tn[, , grep("^01", names(lusc_tn))]
 #' lusc_t.egfr <- rnasubset(lusc_t, "EGFR", 10)
@@ -52,10 +52,15 @@ diffsurv <- function(mae, gene) {
   t1 <- summary(survplot)$table
   data.table(Cohort = c(paste(gene, "high"),
                         paste(gene, "low")),
-             n = t1[grep("high", rownames(t1)), "records"],
-             events = t1[grep("high", rownames(t1)), "events"],
-             median = t1[grep("high", rownames(t1)), "median"],
-             LCI_95 = t1[grep("high", rownames(t1)), "0.95LCL"],
-             UCI_95  = t1[grep("high", rownames(t1)), "0.95UCL"])
+             n = c(t1[grep("high", rownames(t1)), "records"],
+                   t1[grep("low", rownames(t1)), "records"]),
+             events = c(t1[grep("high", rownames(t1)), "events"],
+                        t1[grep("low", rownames(t1)), "events"]),
+             median = c(t1[grep("high", rownames(t1)), "median"],
+                        t1[grep("low", rownames(t1)), "median"]),
+             LCI_95 = c(t1[grep("high", rownames(t1)), "0.95LCL"],
+                        t1[grep("low", rownames(t1)), "0.95LCL"]),
+             UCI_95  = c(t1[grep("high", rownames(t1)), "0.95UCL"],
+                         t1[grep("low", rownames(t1)), "0.95UCL"]))
   }
 
