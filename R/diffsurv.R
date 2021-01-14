@@ -39,6 +39,7 @@ diffsurv <- function(mae, gene) {
     cd2 <- cd1[cd1$value != "medium",]
     cd2$gene2 <- factor(cd2$value, levels = c("high", "low"))
     survplot <- survfit(Surv(years, vital_status) ~ gene2, data = cd2)
+    surv_p <- survdiff(Surv(years, vital_status) ~ gene2, data = cd2)
 
   } else {
     cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death.x", "vital_status.x", "days_to_last_followup.x")]), by.x = "primary", by.y = "patientID")
@@ -48,9 +49,11 @@ diffsurv <- function(mae, gene) {
     cd2 <- cd1[cd1$value != "medium",]
     cd2$gene2 <- factor(cd2$value, levels = c("high", "low"))
     survplot <- survfit(Surv(years, vital_status.x) ~ gene2, data = cd2)
+    surv_p <- survdiff(Surv(years, vital_status.x) ~ gene2, data = cd2)
   }
 
   t1 <- summary(survplot)$table
+  surv_pv <- 1 - pchisq(surv_p$chisq, length(surv_p$n) - 1)
   data.table(Cohort = c(paste(gene, "high"),
                         paste(gene, "low")),
              n = c(t1[grep("high", rownames(t1)), "records"],
@@ -63,6 +66,6 @@ diffsurv <- function(mae, gene) {
                         t1[grep("low", rownames(t1)), "0.95LCL"]),
              UCI_95  = c(t1[grep("high", rownames(t1)), "0.95UCL"],
                          t1[grep("low", rownames(t1)), "0.95UCL"]),
-             pvalue = surv_pvalue(survplot)$pval)
+             pvalue = surv_pv)
   }
 
