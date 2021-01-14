@@ -40,21 +40,10 @@ mutsubset <- function(mae, gene) {
 
   #Mark which samples have the mutated gene and which are wild-type, save as matrix
   level <- matrix(nrow = 1, ncol = nrow(gene1), dimnames = list("level", gene1$colname))
-  level["level", factor(gene1$value, levels = c(1,0), labels =c("Mutated", "WT"))]
+  level["level", ] <- factor(gene1$value, levels = c(1,0), labels =c("Mutated", "WT"))
 
 
   #Append expression level matrix to original MAE object
   mae2 <- c(mae, Cohort = level, mapFrom = assay_num)
 
-  #retrieves patients with mutation
-  mutpat <- intersect(pat$bcr_patient_barcode, colnames(mut))
-  setkey(pat, bcr_patient_barcode)
-  pat2 <- pat[mutpat, ,mult = "first"]
-  setkey(rna, Gene)
-  pat2[, gene := as.numeric(mut[gene, mutpat, with = FALSE])]
-  pat2[, gene2 := factor(gene, levels = 1:0, labels =c("Mutated", "WT"))]
-  pat2$level <- as.numeric(rna[gene, pat2$name, with = FALSE])
-  setkey(pat2, level)
-  pat2$exprs_rank <- 1:nrow(pat2)
-  pat2
 }
