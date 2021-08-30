@@ -16,7 +16,7 @@
 #' @examples
 #' data(skcm)
 #' gene <- "SOX10"
-#' sox10 <- rnasubset(pat, rna, gene, 10)
+#' sox10.pat <- rnasubset(pat, rna, gene, 10)
 #' sox10.mut <- diffmut(sox10.pat, mut)
 #' plotlymut(sox10.pat, mut, sox10.mut, gene)
 #'
@@ -24,7 +24,7 @@
 #'
 plotlymut <- function(pat2, mut, genemut, gene) {
   setkey(pat2, gene2)
-
+  #add n for number of genes to plot, after (pat2, mut, genemut, gene, n)
   #gets patients with rnaseq, clinical and mutation data
   overlap.high <- intersect(pat2[levels(pat2$gene2)[1], bcr_patient_barcode], colnames(mut))
   overlap.low <- intersect(pat2[levels(pat2$gene2)[2], bcr_patient_barcode], colnames(mut))
