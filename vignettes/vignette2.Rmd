@@ -45,7 +45,7 @@ This vignette assumes the user will use one of the R packages mentioned above to
 library(curatedTCGAData)
 library(TCGAutils)
 
-lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray", "Methylation_methyl450"), FALSE)
+lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray", "Methylation_methyl450"), version = "2.1.1", FALSE)
 
 #convert genome to hg19 format
 genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
