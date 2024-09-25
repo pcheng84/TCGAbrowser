@@ -44,18 +44,24 @@ This vignette assumes the user will use one of the R packages mentioned above to
 ```{r, message = FALSE, warning = FALSE}
 library(curatedTCGAData)
 library(TCGAutils)
+ncbi_info = readRDS("../hg19_ncbi_seqinfo_for_GenomeInfoDb.rds")
+assign('GCF_000001405.25', ncbi_info, envir = get(".NCBI_cached_chrom_info", envir = asNamespace('GenomeInfoDb')))
 
 lusc <- curatedTCGAData("LUSC", c("Mutation", "RNASeq2GeneNorm", "GISTIC_ThresholdedByGene", "RPPAArray", "Methylation_methyl450"), version = "2.1.1", FALSE)
 
 #convert genome to hg19 format
-genome(lusc[[2]]) <- vapply(genome(lusc[[2]]), translateBuild, character(1L))
-seqlevelsStyle(lusc[[2]]) <- "NCBI"
+genome(lusc[["LUSC_Mutation-20160128"]]) <- "NCBI37"
+seqlevelsStyle(lusc[["LUSC_Mutation-20160128"]]) <- "UCSC"
+
+gnome <- genome(lusc[["LUSC_Mutation-20160128"]])
+gnome <- translateBuild(gnome)
+genome(lusc[["LUSC_Mutation-20160128"]]) <- gnome
 
 #convert mutation into binary matrix
 lusc2 <- qreduceTCGA(lusc)
 
 #remove normal samples and just focus on primaries
-tnmae <- splitAssays(lusc2, c("01", "11"))
+tnmae <- TCGAsplitAssays(lusc2, c("01", "11"))
 
 lusc_t <- tnmae[, , grep("^01", names(tnmae))]
 
@@ -169,7 +175,7 @@ library(TCGAbiolinks)
 setwd("../")
 query <- GDCquery(project = "TCGA-SKCM",
                   data.category = "Clinical",
-                  file.type = "xml")
+                  data.format = "BCR XML")
 GDCdownload(query)
 skcm.clin <- GDCprepare_clinic(query, clinical.info = "patient")
 skcm.clin.f <- GDCprepare_clinic(query, clinical.info = "follow_up")
