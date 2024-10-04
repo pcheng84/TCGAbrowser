@@ -36,15 +36,15 @@
 
 diffmut <- function(mae) {
   #check only one mutation and one cohort assay in the multiassayexperiment object
-  stopifnot(class(mae) == "MultiAssayExperiment", any(grepl("mutation", names(mae))), any(grepl("cohort", names(mae))))
+  stopifnot(class(mae) == "MultiAssayExperiment", any(grepl("[Mm]utation", names(mae))), any(grepl("[Cc]ohort", names(mae))))
   if(length(grep("mutation", names(mae))) > 1)
     stop("Only one mutation assay is allowed")
   if(length(grep("cohort", names(mae))) > 1)
     stop("Only one cohort comparison is allowed")
 
   # Find which assays contain mutation and expression level
-  mut_assay <- grep("Mmtation", names(mae))
-  exp_assay <- grep("cohort", names(mae))
+  mut_assay <- grep("[Mm]utation", names(mae))
+  exp_assay <- grep("[Cc]ohort", names(mae))
 
   mae2 <- intersectColumns(mae[, , c(mut_assay, exp_assay)])
 
