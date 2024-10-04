@@ -17,7 +17,7 @@ The motivation for TCGAbrowser was to provide convenience functions and wrappers
 
 # Installation
 To install TCGAbrowser use the code below.
-```{r, message = FALSE, warning = FALSE}
+```{r, install, message = FALSE, warning = FALSE}
 require(devtools)
 #devtools::install_github("pcheng84/TCGAbrowser", ref = "multiAssayExperiment")
 require(TCGAbrowser)
@@ -25,7 +25,7 @@ require(TCGAbrowser)
 
 The workflow for TCGAbrowser is shown in the graphic below.
 
-```{r, out.width = "50%", echo = FALSE}
+```{r, workflow, out.width = "50%", echo = FALSE}
 knitr::include_graphics("workflow.png")
 ```
 
@@ -41,7 +41,7 @@ Plotting functions include: `plotsurv` for Kaplan-Meier survival plots; `plotmut
 #Data download and formating
 This vignette assumes the user will use one of the R packages mentioned above to download the TCGA data. In this example, we used `r Biocpkg("curatedTCGAData")` to download the data. We will transform the mutation data into a binary matrix with `qreduceTCGA` from `r Biocpkg("TCGAutils")` and subset the data for just tumor samples using `splitAssays`. 
 
-```{r, message = FALSE, warning = FALSE}
+```{r, download, message = FALSE, warning = FALSE}
 library(curatedTCGAData)
 library(TCGAutils)
 ncbi_info = readRDS("../hg19_ncbi_seqinfo_for_GenomeInfoDb.rds")
@@ -72,7 +72,7 @@ lusc_t <- tnmae[, , grep("^01", names(tnmae))]
 
 In this example, we will compare patients in the top 10% of EGFR expression and to the bottom 10% of EGFR expression.
 
-```{r}
+```{r, rnasubset}
 lusc_egfr <- rnasubset(lusc_t, "EGFR", 10)
 ```
 
@@ -96,14 +96,14 @@ plotsurv(lusc_egfr, "EGFR")
 `diffrna` needs 2 parameters: the output multiassayexperiment object from `rnasubset`. `diffrna` is a wrapper for `voom` from `r Biocpkg("limma")`. It will calculate the genes differentially expressed between the high gene and low gene expression groups.
 
 ```{r}
-egfr_deg <- diffrna(lusc_egfr)
-head(egfr_deg)
+#egfr_deg <- diffrna(lusc_egfr)
+#head(egfr_deg)
 ```
 
 `plotrnaheat` needs 4 parameters: the output multiassayexperiment object from `rnasubset`, the output data.frame from `diffrna`, the gene name, and the number of genes to plot for the heatmap. `plotrnaheat` is a wrapper for `Heatmap` from`r CRANpkg("ComplexHeatmap")`. It will plot a heatmap of the top 100 most significant differentially expressed genes, draw a colored column bar to indicate the high gene and low gene expression groups, and a colored column bar to indicate the rank of the gene of interest.  
 
 ```{r}
-plotrnaheat(lusc_egfr, egfr_deg, "EGFR", 100)
+#plotrnaheat(lusc_egfr, egfr_deg, "EGFR", 100)
 ```
 
 ##Reactome pathway analysis
@@ -112,16 +112,16 @@ plotrnaheat(lusc_egfr, egfr_deg, "EGFR", 100)
 `plotreact` needs 4 parameters: the output table from `rnareact`, the output table from `diffrna`, the graph selection which can be 'dot', 'map', or 'cnet', and the number of pathways for plotting. `plotreact` is a wrapper for `dotplot`, `enrichMap`, and `cnetplot` from `r Biocpkg("ReactomePA")`. 
 
 ```{r}
-egfr_react <- rnareact(egfr_deg)
+#egfr_react <- rnareact(egfr_deg)
 
 #dotplot
-plotreact(egfr_react, egfr_deg, "dot", 15)
+#plotreact(egfr_react, egfr_deg, "dot", 15)
 
 #pathway plot
-plotreact(egfr_react, egfr_deg, "map", 15)
+#plotreact(egfr_react, egfr_deg, "map", 15)
 
 #cnet plot
-plotreact(egfr_react, egfr_deg, "cnet", 5)
+#plotreact(egfr_react, egfr_deg, "cnet", 5)
 ```
 
 ##Differential mutation
@@ -140,8 +140,8 @@ plotmut(lusc_egfr, egfr_dm, "EGFR", 20)
 `plotcp` needs 4 parameters: the MultiAssayExperiment object from `rnasuset` or `mutsubset`, the output table from `diffcp`, the gene name, and the number of genes to plot. It will create an Oncoprint-like plot of the copy number differences and your gene of interest.
 
 ```{r}
-egfr_dcp <- diffcp(lusc_egfr)
-plotcp(lusc_egfr, egfr_dcp, "EGFR", 20)
+#egfr_dcp <- diffcp(lusc_egfr)
+#plotcp(lusc_egfr, egfr_dcp, "EGFR", 20)
 ```
 
 ##Differential methylation analyis
@@ -169,42 +169,42 @@ lusc_t.egfr <- mutsubset(lusc_t, "EGFR")
 
 #Creating Multiassayexperiment from TCGAbiolinks
 ```{r eval = FALSE, echo = TRUE}
-library(data.table)
-
-library(TCGAbiolinks)
-setwd("../")
-query <- GDCquery(project = "TCGA-SKCM",
-                  data.category = "Clinical",
-                  data.format = "BCR XML")
-GDCdownload(query)
-skcm.clin <- GDCprepare_clinic(query, clinical.info = "patient")
-skcm.clin.f <- GDCprepare_clinic(query, clinical.info = "follow_up")
-setDT(skcm.clin.f)
-setDT(skcm.clin)
-skcm.clin[, days := ifelse(is.na(days_to_death), days_to_last_followup, days_to_death)]
-skcm.clin[, TCGA_days := days - days_to_submitted_specimen_dx]
-
-query1 <- GDCquery(project = "TCGA-SKCM",
-                  data.category = "Copy Number Variation",
-                  data.type = "Gene Level Copy Number Scores",
-                  access="open")
-GDCdownload(query1)
-skcm_gis <- GDCprepare(query1)
-
-query2 <- GDCquery(project = "TCGA-SKCM",
-                  data.category = "Copy Number Variation",
-                  data.type = "Copy Number Segment",
-                  access="open")
-GDCdownload(query2, files.per.chunk = 20)
-skcm_gis2 <- GDCprepare(query2)
-setDT(skcm_gis)
-skcm_maf <- GDCquery_Maf("SKCM", pipelines = "mutect2")
-setDT(skcm_maf)
-skcm_rna <- GDCquery(project = "TCGA-SKCM",
-                     data.category = "Transcriptome Profiling",
-                     data.type = "Gene Expression Quantification",
-                     workflow.type = "STAR - Counts")
-
-GDCdownload(skcm_rna, method = "api", files.per.chunk = 20)
-skcm_rna2 <- GDCprepare(skcm_rna)
+#library(data.table)
+#
+#library(TCGAbiolinks)
+#setwd("../")
+#query <- GDCquery(project = "TCGA-SKCM",
+#                  data.category = "Clinical",
+#                  data.format = "BCR XML")
+#GDCdownload(query)
+#skcm.clin <- GDCprepare_clinic(query, clinical.info = "patient")
+#skcm.clin.f <- GDCprepare_clinic(query, clinical.info = "follow_up")
+#setDT(skcm.clin.f)
+#setDT(skcm.clin)
+#skcm.clin[, days := ifelse(is.na(days_to_death), days_to_last_followup, days_to_death)]
+#skcm.clin[, TCGA_days := days - days_to_submitted_specimen_dx]
+#
+#query1 <- GDCquery(project = "TCGA-SKCM",
+#                  data.category = "Copy Number Variation",
+#                  data.type = "Gene Level Copy Number Scores",
+#                  access="open")
+#GDCdownload(query1)
+#skcm_gis <- GDCprepare(query1)
+#
+#query2 <- GDCquery(project = "TCGA-SKCM",
+#                  data.category = "Copy Number Variation",
+#                  data.type = "Copy Number Segment",
+#                  access="open")
+#GDCdownload(query2, files.per.chunk = 20)
+#skcm_gis2 <- GDCprepare(query2)
+#setDT(skcm_gis)
+#skcm_maf <- GDCquery_Maf("SKCM", pipelines = "mutect2")
+#setDT(skcm_maf)
+#skcm_rna <- GDCquery(project = "TCGA-SKCM",
+#                     data.category = "Transcriptome Profiling",
+#                     data.type = "Gene Expression Quantification",
+#                     workflow.type = "STAR - Counts")
+#
+#GDCdownload(skcm_rna, method = "api", files.per.chunk = 20)
+#skcm_rna2 <- GDCprepare(skcm_rna)
 ```
