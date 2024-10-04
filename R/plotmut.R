@@ -40,16 +40,16 @@
 #'
 plotmut <- function(mae, genemut, gene, n = 20) {
   #check only one mutation and one cohort assay in the multiassayexperiment object
-  stopifnot(class(mae) == "MultiAssayExperiment", any(grepl("Mutation", names(mae))), any(grepl("Cohort", names(mae))))
-  if(length(grep("Mutation", names(mae))) > 1)
+  stopifnot(class(mae) == "MultiAssayExperiment", any(grepl("[Mm]utation", names(mae))), any(grepl("[Cc]ohort", names(mae))))
+  if(length(grep("[Mm]utation", names(mae))) > 1)
     stop("Only one mutation assay is allowed")
-  if(length(grep("Cohort", names(mae))) > 1)
+  if(length(grep("[Cc]ohort", names(mae))) > 1)
     stop("Only one cohort comparison is allowed")
   if(nrow(genemut) == 0)
     return("No differentially mutated genes") else {
   # Find which assays contain mutation and expression level
-  mut_assay <- grep("Mutation", names(mae))
-  exp_assay <- grep("Cohort", names(mae))
+  mut_assay <- grep("[Mm]utation", names(mae))
+  exp_assay <- grep("[Cc]ohort", names(mae))
 
   mae2 <- intersectColumns(mae[, , c(mut_assay, exp_assay)])
 
@@ -57,8 +57,8 @@ plotmut <- function(mae, genemut, gene, n = 20) {
   lvl2 <- data.frame(Cohort = colnames(mae2[[2]]), Level = mae2[[2]][1,])
   lvl3 <- merge(annot, lvl2, by = "Cohort")
 
-  lvl.high <- lvl3[lvl3$Level == "high", grep("Mutation", colnames(lvl3))]
-  lvl.low <- lvl3[lvl3$Level == "low", grep("Mutation", colnames(lvl3))]
+  lvl.high <- lvl3[lvl3$Level == "high", grep("[Mm]utation", colnames(lvl3))]
+  lvl.low <- lvl3[lvl3$Level == "low", grep("[Mm]utation", colnames(lvl3))]
 
   mut <- assay(mae2[[1]])
 

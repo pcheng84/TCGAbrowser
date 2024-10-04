@@ -30,10 +30,10 @@
 #' @export
 #'
 plotrnaheat <- function(mae, deg, gene, n = 100) {
-  stopifnot(any(grepl("Cohort", names(mae))))
+  stopifnot(any(grepl("[Cc]ohort", names(mae))))
 
-  rna_assay <- grep("RNASeq", names(mae))
-  cohort_assay <- grep("Cohort", names(mae))
+  rna_assay <- grep("[Rr][Nn][Aa][Ss][Ee][Qq]", names(mae))
+  cohort_assay <- grep("[Cc]ohort", names(mae))
   lvl <- mae[[cohort_assay]]
   good_levels <- names(lvl[1, lvl[1,] != "medium"])
 

@@ -6,6 +6,7 @@
 #'
 #' @import gage
 #' @importFrom ReactomePA enrichPathway
+#' @importFrom enrichplot pairwise_termsim
 #' @import DOSE
 #'
 #' @return data frame of enrichment for Reactome gene sets
@@ -30,5 +31,6 @@ rnareact <- function(deg) {
   data(lookup)
   limma.names <- lookup$entrez[match(deg$genes, lookup$gene)]
   x <- enrichPathway(gene = limma.names, pvalueCutoff=1, readable=T)
+  x <- pairwise_termsim(x)
 }
 

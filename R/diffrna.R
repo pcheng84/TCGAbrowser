@@ -34,8 +34,9 @@ diffrna <- function(mae) {
   #Extract RNASeq data for all genes, subset out the "medium" expression group
   rna_assay <- grep("[Rr][Nn][Aa][Ss][Ee][Qq]", names(mae))
   counts <- assay(mae[[rna_assay]])
+  colnames(counts) <- gsub("(TCGA-.*?-.*?-.*?)-.*", "\\1", colnames(counts))
   good_genes <- apply(counts, 1, function(x) any(is.na(x)) == FALSE)
-  counts <- counts[good_genes, good_levels]
+  counts <- counts[good_genes, good_levels[good_levels %in% colnames(counts)]]
 
   #Create DGEList
   deg <- DGEList(counts = counts, genes = rownames(counts), group = lvl[1, lvl[1,] != "medium"])

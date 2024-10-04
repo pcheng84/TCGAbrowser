@@ -34,18 +34,18 @@ diffclin <- function(mae, vars = c("years_to_birth", "gender", "histological_typ
 
   d1 <- longFormat(mae["level", , "Cohort"])
   d1$level <- as.character(d1$value)
-  d2 <- longFormat(mae["counts", , "Cohort"])
-  d2$counts <- as.numeric(levels(d2$value))
+  #d2 <- longFormat(mae["counts", , "Cohort"])
+  #d2$counts <- as.numeric(levels(d2$value))
   if("vital_status" %in% colnames(colData(mae))) {
-    cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death", "vital_status", "days_to_last_followup", vars)]), by.x = "primary", by.y = "patientID")
-    cd2 <- merge(as.data.frame(d2), cd1, by = c("primary", "assay", "colname"))
+    cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)), by.x = "primary", by.y = "bcr_patient_barcode")
+    #cd2 <- merge(as.data.frame(d2), cd1, by = c("primary", "assay", "colname"))
 
 
     #summarize clinical features using gtsummary
-    setDT(cd2)
-    setkey(cd2, level)
+    setDT(cd1)
+    setkey(cd1, level)
 
-    tbl_summary(cd2[c("high", "low"), c("level", "counts", vars), with = FALSE], by = "level") %>%
+    tbl_summary(cd1[c("high", "low"),], by = "level") %>%
       add_overall() %>%
       add_n() %>%
       add_p() %>%

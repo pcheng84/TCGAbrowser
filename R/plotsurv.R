@@ -32,7 +32,7 @@ plotsurv <- function(mae, gene) {
 
   d1 <- longFormat(mae["level", , "Cohort"])
   if("vital_status" %in% colnames(colData(mae))) {
-    cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death", "vital_status", "days_to_last_followup")]), by.x = "primary", by.y = "patientID")
+    cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("bcr_patient_barcode", "days_to_death", "vital_status", "days_to_last_followup")]), by.x = "primary", by.y = "bcr_patient_barcode")
     cd1$years <- ifelse(cd1$vital_status == 1,
                         round(cd1$days_to_death/365.25,2),
                         round(cd1$days_to_last_followup/365.25, 2))
@@ -41,7 +41,7 @@ plotsurv <- function(mae, gene) {
     survplot <- survfit(Surv(years, vital_status) ~ gene2, data = cd2)
 
    } else {
-  cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("patientID", "days_to_death.x", "vital_status.x", "days_to_last_followup.x")]), by.x = "primary", by.y = "patientID")
+  cd1 <- merge(as.data.frame(d1), as.data.frame(colData(mae)[, c("bcr_patient_barcode", "days_to_death.x", "vital_status.x", "days_to_last_followup.x")]), by.x = "primary", by.y = "bcr_patient_barcode")
   cd1$years <- ifelse(cd1$vital_status.x == 1,
                       round(cd1$days_to_death.x/365.25,2),
                       round(cd1$days_to_last_followup.x/365.25, 2))

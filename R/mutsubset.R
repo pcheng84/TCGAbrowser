@@ -37,13 +37,13 @@ mutsubset <- function(mae, gene) {
 
   #Get mutation data as a data.frame for calculations
   gene1 <- longFormat(mae[gene, , assay_num])
-
+  gene1$level <- ifelse(gene1$value == 0, "low", "high")
   #Mark which samples have the mutated gene and which are wild-type, save as matrix
   level <- matrix(nrow = 1, ncol = nrow(gene1), dimnames = list("level", gene1$colname))
-  level["level", ] <- factor(gene1$value, levels = c(1,0), labels =c("Mutated", "WT"))
+  level["level", ] <- gene1$level
 
 
   #Append expression level matrix to original MAE object
-  mae2 <- c(mae, cohort = level, mapFrom = assay_num)
+  mae2 <- c(mae, Cohort = level, mapFrom = assay_num)
 
 }
