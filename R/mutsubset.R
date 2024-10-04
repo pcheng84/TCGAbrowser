@@ -30,7 +30,7 @@ mutsubset <- function(mae, gene) {
   stopifnot(class(mae) == "MultiAssayExperiment")
 
   #Find which assay contains Mutation data (assay names have suffixes and prefixes for each cancer)
-  assay_num <- grep("Mutation", names(mae))
+  assay_num <- grep("mutation", names(mae))
 
   #check if gene exists in mutation dataset
   stopifnot(toupper(gene) %in% rownames(mae[[assay_num]]))
@@ -44,6 +44,6 @@ mutsubset <- function(mae, gene) {
 
 
   #Append expression level matrix to original MAE object
-  mae2 <- c(mae, Cohort = level, mapFrom = assay_num)
+  mae2 <- c(mae, cohort = level, mapFrom = assay_num)
 
 }

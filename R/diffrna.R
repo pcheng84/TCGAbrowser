@@ -25,16 +25,16 @@
 #' @export
 #'
 diffrna <- function(mae) {
-  stopifnot(any(grepl("Cohort", names(mae))))
+  stopifnot(any(grepl("cohort", names(mae))))
   #Get expression levels (which were appended by function rnasubset()), ID those with high / low expression
-  cohort_assay <- grep("Cohort", names(mae))
+  cohort_assay <- grep("cohort", names(mae))
   lvl <- mae[[cohort_assay]]
   good_levels <- names(lvl[1, lvl[1,] != "medium"])
 
   #Extract RNASeq data for all genes, subset out the "medium" expression group
-  rna_assay <- grep("RNASeq", names(mae))
+  rna_assay <- grep("rnaseq", names(mae))
   counts <- assay(mae[[rna_assay]])
-  good_genes <- apply(counts, 1, function(x) any(is.na(x)))
+  good_genes <- apply(counts, 1, function(x) any(is.na(x)) == FALSE)
   counts <- counts[good_genes, good_levels]
 
   #Create DGEList

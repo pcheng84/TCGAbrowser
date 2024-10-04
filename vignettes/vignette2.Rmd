@@ -203,7 +203,7 @@ setDT(skcm_maf)
 skcm_rna <- GDCquery(project = "TCGA-SKCM",
                      data.category = "Transcriptome Profiling",
                      data.type = "Gene Expression Quantification",
-                     workflow.type = "HTSeq - Counts")
+                     workflow.type = "STAR - Counts")
 
 GDCdownload(skcm_rna, method = "api", files.per.chunk = 20)
 skcm_rna2 <- GDCprepare(skcm_rna)
