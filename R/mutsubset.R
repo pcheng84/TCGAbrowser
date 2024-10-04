@@ -30,7 +30,7 @@ mutsubset <- function(mae, gene) {
   stopifnot(class(mae) == "MultiAssayExperiment")
 
   #Find which assay contains Mutation data (assay names have suffixes and prefixes for each cancer)
-  assay_num <- grep("mutation", names(mae))
+  assay_num <- grep("[Mm]utation", names(mae))
 
   #check if gene exists in mutation dataset
   stopifnot(toupper(gene) %in% rownames(mae[[assay_num]]))
