@@ -29,7 +29,7 @@ rnasubset <- function(mae, gene, percent) {
   stopifnot(class(mae) == "MultiAssayExperiment")
 
   #Find which assay contains RNA data (assay names have suffixes and prefixes for each cancer)
-  assay_num <- grep("[Rr]naseq", names(mae))
+  assay_num <- grep("[Rr][Nn][Aa][Ss][Ee][Qq]", names(mae))
 
   #check if gene exists in RNAseq dataset
   stopifnot(toupper(gene) %in% rownames(mae[[assay_num]]))
